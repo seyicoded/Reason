@@ -225,36 +225,10 @@ const resendEmailController = async(req, res)=>{
 }
 
 const verify_account = async(req,res)=>{
-    try{
-        const token = req.params.token;
-        const data = verify_token_extract(token)
+    const token = req.params.token;
+    const data = verify_token_extract(token)
 
-        // console.log(token)
-        // console.log(data)
-
-        const u_id = data.u_id;
-
-        db.execute("UPDATE users SET status = 1 WHERE u_id = ?", [u_id], (err, results, fields)=>{
-            if(err){
-                return res.status(200).json({
-                    status: false,
-                    message: 'An error occurred',
-                })    
-            }
-
-            console.log('reached')
-
-            return res.send(`
-                    <script>
-                        alert('Account Successfully Verified');
-                        document.write('Account Successfully Verified');
-                    </script>
-                `);
-        });
-    }catch(e){
-        console.log(e)
-    }
-    
+    console.log(data)
 }
 
 module.exports = {

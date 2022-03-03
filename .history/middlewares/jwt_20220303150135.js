@@ -22,7 +22,6 @@ const generateJwtTokenForEmailValidate = (data) => {
 };
 
 const verify_token_extract = (token)=>{
-    var object = null;
     jwt.verify(
         token,
         process.env.JWT_SECRET_TOKEN_SECRET,
@@ -32,12 +31,10 @@ const verify_token_extract = (token)=>{
               console.log(error)
             return false;
           } else {
-            object = decoded;
+            return decoded
           }
         }
       );
-    
-      return object;
 }
 
 module.exports = {

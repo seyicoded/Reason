@@ -242,8 +242,6 @@ const verify_account = async(req,res)=>{
                 })    
             }
 
-            console.log('reached')
-
             return res.send(`
                     <script>
                         alert('Account Successfully Verified');

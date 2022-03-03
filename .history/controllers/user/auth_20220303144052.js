@@ -1,7 +1,7 @@
 const {getDB} = require('../../db/index')
 const db = getDB;
 const bcrypt = require('bcryptjs');
-const {generateJwtToken, generateJwtTokenForEmailValidate, verify_token_extract} = require('../../middlewares/jwt')
+const {generateJwtToken, generateJwtTokenForEmailValidate} = require('../../middlewares/jwt')
 const {sendMail} = require('../../mailer')
 // const url = require('url');
 
@@ -225,36 +225,7 @@ const resendEmailController = async(req, res)=>{
 }
 
 const verify_account = async(req,res)=>{
-    try{
-        const token = req.params.token;
-        const data = verify_token_extract(token)
-
-        // console.log(token)
-        // console.log(data)
-
-        const u_id = data.u_id;
-
-        db.execute("UPDATE users SET status = 1 WHERE u_id = ?", [u_id], (err, results, fields)=>{
-            if(err){
-                return res.status(200).json({
-                    status: false,
-                    message: 'An error occurred',
-                })    
-            }
-
-            console.log('reached')
-
-            return res.send(`
-                    <script>
-                        alert('Account Successfully Verified');
-                        document.write('Account Successfully Verified');
-                    </script>
-                `);
-        });
-    }catch(e){
-        console.log(e)
-    }
-    
+    const token = req.params.token;
 }
 
 module.exports = {

@@ -240,16 +240,13 @@ const verify_account = async(req,res)=>{
                     status: false,
                     message: 'An error occurred',
                 })    
-            }
 
-            console.log('reached')
-
-            return res.send(`
+                return `
                     <script>
                         alert('Account Successfully Verified');
-                        document.write('Account Successfully Verified');
                     </script>
-                `);
+                `;
+            }
         });
     }catch(e){
         console.log(e)

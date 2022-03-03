@@ -21,23 +21,19 @@ const generateJwtTokenForEmailValidate = (data) => {
     );
 };
 
-const verify_token_extract = (token)=>{
-    var object = null;
+const verify_token_extract = async(token)=>{
     jwt.verify(
         token,
         process.env.JWT_SECRET_TOKEN_SECRET,
-        {},
+        { algorithms: ["HS256"] },
         async (error, decoded) => {
           if (error) {
-              console.log(error)
             return false;
           } else {
-            object = decoded;
+            return decoded
           }
         }
       );
-    
-      return object;
 }
 
 module.exports = {

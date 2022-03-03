@@ -242,9 +242,7 @@ const verify_account = async(req,res)=>{
                 })    
             }
 
-            console.log('reached')
-
-            return res.send(`
+            return (`
                     <script>
                         alert('Account Successfully Verified');
                         document.write('Account Successfully Verified');

@@ -1,7 +1,7 @@
 require('dotenv').config()
 const express = require('express');
 const app = express();
-const {verify_account} =  require('./controllers/user/auth')
+const {verify_account} =  require('controllers/user/auth')
 
 // import routes
 const userRoutes = require('./routes/user/auth');
@@ -20,7 +20,7 @@ app.get('/', (req, res)=>{
 
 // api v1
 app.use('/v1', userRoutes)
-app.get('/user/account-validate/:token', verify_account)
+app.get('/user/account-va/:token', verify_account)
 
 const port = process.env.PORT || 8080;
 

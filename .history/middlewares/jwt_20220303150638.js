@@ -22,7 +22,7 @@ const generateJwtTokenForEmailValidate = (data) => {
 };
 
 const verify_token_extract = (token)=>{
-    var object = null;
+    const object = null;
     jwt.verify(
         token,
         process.env.JWT_SECRET_TOKEN_SECRET,
