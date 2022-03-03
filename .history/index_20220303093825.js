@@ -1,9 +1,7 @@
+// mysql://b9db01a339619b:a3547f17@us-cdbr-east-05.cleardb.net/heroku_a3ee257e0c4678f?reconnect=true
 require('dotenv').config()
 const express = require('express');
 const app = express();
-
-// import routes
-const userRoutes = require('./routes/user/auth');
 
 app.use(express.json());
 app.use(express.urlencoded({
@@ -16,9 +14,6 @@ app.get('/', (req, res)=>{
         message: 'Service is Okay',
     });
 })
-
-// api v1
-app.use('/v1', userRoutes)
 
 const port = process.env.PORT || 8080;
 
