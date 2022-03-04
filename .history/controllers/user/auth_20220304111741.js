@@ -276,7 +276,7 @@ const requestOtpController = async(req, res)=>{
                 (async()=>{
                     // generate random code
                     const code = `${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}`;
-                    db.execute("UPDATE users SET code = ? WHERE email = ?", [code, email], (errs, resultss)=>{
+                    db.execute("UPDATE users SET code = ? WHERE email = ?", [email, code], (errs, resultss)=>{
                         if(errs){
                             return res.status(500).json({
                                 status: false,
@@ -331,89 +331,10 @@ const requestOtpController = async(req, res)=>{
     }
 }
 
-const changePasswordWithOtpController = async(req, res)=>{
-    try{
-        
-        const {email, new_password, otp} = req.body;
-        var password = await bcrypt.hash(new_password, 10);
-
-        db.execute("SELECT * FROM users WHERE email = ?",[email],(err, results, fields)=>{
-            if(err){
-                return res.status(500).json({
-                    status: false,
-                    message: 'An error occurred',
-                    error: err
-
-                })    
-            }
-
-            // console.log(results)
-            if( results.length > 0 ){
-                (async()=>{
-                    const isOTPVALID = (otp == results[0].code) ? true:false;
-                    if(isOTPVALID){
-                        // update password and clear otp
-                        var new_otp = 0;
-                        password = password;
-                        
-                        db.execute("UPDATE users SET code = ?, password = ? WHERE email = ?", [new_otp, password, email], (errss, resultss)=>{
-                            if(err){
-                                return res.status(500).json({
-                                    status: false,
-                                    message: 'An error occurred',
-                                    error: err
-                
-                                })    
-                            }
-
-                            return res.status(200).json({
-                                status: true,
-                                message: 'Password Changed Successfully',
-                                token: generateJwtToken(results[0]),
-                                data: results[0],
-                                isAccountValidated: ((results[0].status == 1) ? true: false)
-            
-                            })
-
-
-                        });
-                    }else{
-                        return res.status(500).json({
-                            status: false,
-                            message: 'Otp is Invalid',
-                            error: []
-        
-                        })  
-                    }
-                })()
-                
-            }else{
-                return res.status(500).json({
-                    status: false,
-                    message: 'User doesn\'t exist',
-                    error: []
-
-                })  
-            }
-
-                
-        });
-
-    }catch(e){
-        console.log(error)
-        return res.status(500).json({
-            status: false,
-            message: 'an error occurred',
-            error: error
-        })
-    }
-}
-
 module.exports = {
     signinController,
     signupController,
     resendEmailController,
     verify_account,
-    requestOtpController,
-    changePasswordWithOtpController
+    requestOtpController
 };

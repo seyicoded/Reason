@@ -276,7 +276,7 @@ const requestOtpController = async(req, res)=>{
                 (async()=>{
                     // generate random code
                     const code = `${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}`;
-                    db.execute("UPDATE users SET code = ? WHERE email = ?", [code, email], (errs, resultss)=>{
+                    db.execute("UPDATE users SET code = ? WHERE email = ?", [email, code], (errs, resultss)=>{
                         if(errs){
                             return res.status(500).json({
                                 status: false,
