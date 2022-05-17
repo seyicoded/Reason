@@ -68,13 +68,13 @@ const signupController = async(req, res)=>{
     // console.log(req.body)
     
     try {
-        var {email, first_name, last_name, phone, password} = req.body
+        var {email, first_name, last_name, phone, password, dob, gender, newsletter} = req.body
 
         password = await bcrypt.hash(password, 10);
 
         console.log(password)
 
-        db.execute("INSERT INTO users(email, phone, first_name, last_name, password) VALUES(?, ?, ?, ?, ?)",[email, phone, first_name, last_name, password],(err, results, fields)=>{
+        db.execute("INSERT INTO users(email, phone, first_name, last_name, password, dob, gender, newsletter) VALUES(?, ?, ?, ?, ?, ?, ?, ?)",[email, phone, first_name, last_name, password, dob, gender, newsletter],(err, results, fields)=>{
             if(err){
                 return res.status(500).json({
                     status: false,
