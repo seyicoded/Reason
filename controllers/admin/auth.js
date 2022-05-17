@@ -15,7 +15,7 @@ const registerAdmin = async (req, res)=>{
                 return res.status(500).json({
                     status: false,
                     message: 'an error occurred',
-                    error: error
+                    error: err
                 })
             }
 
@@ -44,4 +44,63 @@ const registerAdmin = async (req, res)=>{
     }
 }
 
-module.exports = {registerAdmin}
+const loginAdmin = async (req, res)=>{
+    try{
+        const {email, password} = req.body;
+
+        db.execute("SELECT * FROM admins WHERE email = ?",[email], (err, results)=>{
+            if(err){
+                return res.status(500).json({
+                    status: false,
+                    message: 'an error occurred',
+                    error: err
+                })
+            }
+
+            // check if data exist
+            if(results.length > 0){
+                const result = results[0];
+                
+                (async()=>{
+                    const isValidPassword = await bcrypt.compare(password, result.password);
+                    if(isValidPassword){
+                        return res.status(200).json({
+                            status: true,
+                            message: 'Login Successful',
+                            token: generateJwtToken(result),
+                            data: result,
+                            isAccountValidated: ((result.status == 1) ? true: false),
+                            isAccountBlocked: ((result.status > 1) ? true: false),
+        
+                        })
+                    }else{
+                        return res.status(500).json({
+                            status: false,
+                            message: 'Email or Password MisMatch',
+                            error: []
+        
+                        })  
+                    }
+                })()
+
+            }else{
+                return res.status(500).json({
+                    status: false,
+                    message: 'email not found',
+                })
+            }
+        })
+    }catch(error){
+        console.log(error)
+        return res.status(500).json({
+            status: false,
+            message: 'an error occurred',
+            error: error
+        })
+    }
+}
+
+module.exports = {
+    registerAdmin,
+    loginAdmin
+}
