@@ -1,7 +1,11 @@
 require('dotenv').config()
 const express = require('express');
 const app = express();
+const cors = require('cors');
 const {verify_account} =  require('./controllers/user/auth')
+
+
+app.use(cors())
 
 // import routes
 const userRoutes = require('./routes/user/auth');
