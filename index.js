@@ -8,8 +8,9 @@ const {verify_account} =  require('./controllers/user/auth')
 app.use(cors())
 
 // import routes
-const userRoutes = require('./routes/user/auth');
-const adminRoutes = require('./routes/admin/auth');
+const userAuthRoutes = require('./routes/user/auth');
+const adminAuthRoutes = require('./routes/admin/auth');
+const adminProfileRoutes = require('./routes/admin/profile');
 
 app.use(express.json());
 app.use(express.urlencoded({
@@ -24,8 +25,9 @@ app.get('/', (req, res)=>{
 })
 
 // api v1
-app.use('/v1', userRoutes)
-app.use('/v1', adminRoutes)
+app.use('/v1', userAuthRoutes)
+app.use('/v1', adminAuthRoutes)
+app.use('/v1', adminProfileRoutes)
 app.get('/user/account-validate/:token', verify_account)
 
 const port = process.env.PORT || 8080;
