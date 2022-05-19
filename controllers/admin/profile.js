@@ -17,7 +17,8 @@ const viewAll = async (req, res)=>{
                 return res.status(200).json({
                     status: true,
                     message: 'Admin successfully fetched',
-                    results: results
+                    results: results,
+                    count: results.length
                 })
             }else{
                 return res.status(500).json({
