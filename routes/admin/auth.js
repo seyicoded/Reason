@@ -5,7 +5,11 @@ const {
     loginAdmin
 } =  require('../../controllers/admin/auth')
 
-app.post('/admin/sign-up', registerAdmin)
+const {
+    verifyUsersToken
+} = require('../../middlewares/authvet');
+
+app.post('/admin/sign-up', verifyUsersToken, registerAdmin)
 app.post('/admin/sign-in', loginAdmin)
 // 
 
