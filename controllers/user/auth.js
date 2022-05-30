@@ -259,68 +259,69 @@ const verify_account = async(req,res)=>{
 
 const requestOtpController = async(req, res)=>{
     try{
-        const email = req.body.email;
+        const {phone, email} = req.body;
+        return res.send(`${phone}- ${email}`);
 
-        db.execute("SELECT * FROM users WHERE email = ?",[email],(err, results, fields)=>{
-            if(err){
-                return res.status(500).json({
-                    status: false,
-                    message: 'An error occurred',
-                    error: err
+        // db.execute("SELECT * FROM users WHERE email = ?",[email],(err, results, fields)=>{
+        //     if(err){
+        //         return res.status(500).json({
+        //             status: false,
+        //             message: 'An error occurred',
+        //             error: err
 
-                })    
-            }
+        //         })    
+        //     }
 
-            // console.log(results)
-            if( results.length > 0 ){
-                (async()=>{
-                    // generate random code
-                    const code = `${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}`;
-                    db.execute("UPDATE users SET code = ? WHERE email = ?", [code, email], (errs, resultss)=>{
-                        if(errs){
-                            return res.status(500).json({
-                                status: false,
-                                message: 'An error occurred',
-                                error: err
+        //     // console.log(results)
+        //     if( results.length > 0 ){
+        //         (async()=>{
+        //             // generate random code
+        //             const code = `${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}`;
+        //             db.execute("UPDATE users SET code = ? WHERE email = ?", [code, email], (errs, resultss)=>{
+        //                 if(errs){
+        //                     return res.status(500).json({
+        //                         status: false,
+        //                         message: 'An error occurred',
+        //                         error: err
             
-                            })    
-                        }
+        //                     })    
+        //                 }
 
-                        // send mail and return success
-                        (async()=>{
-                            try {
-                                await sendMail({
-                                    to: email,
-                                    subject: 'OTP FOR ACCOUNT RECOVERY',
-                                    html: `
-                                        <h1 style='text-align: center'>USE THE CODE TO CHANGE YOUR PASSWORD</h1>
-                                        <div style='text-align: center; font-weight: bolder; font-size: 23px'>${code}</div>
-                                    `,
-                                })  
+        //                 // send mail and return success
+        //                 (async()=>{
+        //                     try {
+        //                         await sendMail({
+        //                             to: email,
+        //                             subject: 'OTP FOR ACCOUNT RECOVERY',
+        //                             html: `
+        //                                 <h1 style='text-align: center'>USE THE CODE TO CHANGE YOUR PASSWORD</h1>
+        //                                 <div style='text-align: center; font-weight: bolder; font-size: 23px'>${code}</div>
+        //                             `,
+        //                         })  
                                 
-                                return res.status(200).json({
-                                    status: true,
-                                    message: 'OTP Sent to Mail'
+        //                         return res.status(200).json({
+        //                             status: true,
+        //                             message: 'OTP Sent to Mail'
                 
-                                })
-                            } catch (error) {
-                                console.log(error)
-                            }
-                        })()
-                    });
-                })()
+        //                         })
+        //                     } catch (error) {
+        //                         console.log(error)
+        //                     }
+        //                 })()
+        //             });
+        //         })()
                 
-            }else{
-                return res.status(500).json({
-                    status: false,
-                    message: 'User doesn\'t exist',
-                    error: []
+        //     }else{
+        //         return res.status(500).json({
+        //             status: false,
+        //             message: 'User doesn\'t exist',
+        //             error: []
 
-                })  
-            }
+        //         })  
+        //     }
 
                 
-        });
+        // });
     }catch(e){
         console.log(error)
         return res.status(500).json({

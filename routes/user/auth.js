@@ -11,7 +11,7 @@ app.post('/sign-in', signinController)
 app.post('/sign-up', signupController)
 app.post('/resend-email', resendEmailController)
 app.post('/request-otp', requestOtpController)
-app.post('/change-password-with-otp', changePasswordWithOtpController)
+// app.post('/change-password-with-otp', changePasswordWithOtpController)
 // 
 
 
