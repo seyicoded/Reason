@@ -340,6 +340,71 @@ const requestOtpController = async(req, res)=>{
     }
 }
 
+const verifyOtpController = async (req, res)=>{
+    const {phone, email, otp} = req.body;
+
+    db.execute("SELECT * FROM otp_session WHERE phone = ? AND email = ? AND otp = ?", [phone, email, otp], (err, results, fields)=>{
+        if(err){
+            return res.status(500).json({
+                status: false,
+                message: 'An error occurred',
+                error: err
+
+            })    
+        }
+
+        if( results.length > 0 ){
+            if(results[0].status == 0){
+                // update otp information
+                const status = 1;
+
+                // check if otp is expired
+                try{
+                    const expire = jwt.verify(results[0].expire, process.env.JWT_SECRET_TOKEN_SECRET);
+                }catch(e){
+                    // assuming otp is expired
+                    return res.status(500).json({
+                        status: false,
+                        message: 'OTP Already Expired',
+                        error: []
+                    })  
+                }
+
+                db.execute("UPDATE otp_session SET status = ? WHERE phone = ? AND email = ?", [status, phone, email], (err1, results1, fields1)=>{
+                    if(err1){
+                        return res.status(500).json({
+                            status: false,
+                            message: 'An error occurred',
+                            error: err
+
+                        })    
+                    }
+
+                    return res.status(200).json({
+                        status: true,
+                        message: 'OTP Verified',
+                    })
+                });
+            }else{
+                return res.status(500).json({
+                    status: false,
+                    message: 'OTP Already Verified',
+                    error: []
+                })  
+            }
+        }else{
+            return res.status(500).json({
+                status: false,
+                message: 'Invalid OTP',
+                error: []
+
+            })  
+        }
+
+    });
+
+}
+
 const changePasswordWithOtpController = async(req, res)=>{
     try{
         
@@ -424,5 +489,6 @@ module.exports = {
     resendEmailController,
     verify_account,
     requestOtpController,
-    changePasswordWithOtpController
+    changePasswordWithOtpController,
+    verifyOtpController
 };
