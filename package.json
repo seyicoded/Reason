@@ -4,7 +4,7 @@
   "description": "API for APP",
   "main": "index.js",
   "scripts": {
-    "start":"nodemon  start",
+    "start": "nodemon  start",
     "test": "echo \"Error: no test specified\" && exit 1",
     "push": "git push origin master && git push heroku master"
   },
@@ -17,6 +17,7 @@
     "express": "^4.17.3",
     "global": "^4.4.0",
     "jsonwebtoken": "^8.5.1",
+    "moment": "^2.29.3",
     "mysql2": "^2.3.3",
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.16"

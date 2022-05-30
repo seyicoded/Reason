@@ -3,6 +3,8 @@ const db = getDB;
 const bcrypt = require('bcryptjs');
 const {generateJwtToken, generateJwtTokenForEmailValidate, verify_token_extract} = require('../../middlewares/jwt')
 const {sendMail} = require('../../mailer')
+const jwt = require('jsonwebtoken');
+require('dotenv').config()
 // const url = require('url');
 
 const signinController = async(req, res)=>{
@@ -260,17 +262,48 @@ const verify_account = async(req,res)=>{
 const requestOtpController = async(req, res)=>{
     try{
         const {phone, email} = req.body;
-        return res.send(`${phone}- ${email}`);
+        // return res.send(`${phone}- ${email}`);
+
+        db.execute("SELECT * FROM otp_session WHERE phone = ? AND email = ?", [phone, email], (err, results, fields)=>{
+            if(err){
+                return res.status(500).json({
+                    status: false,
+                    message: 'An error occurred',
+                    error: err
+
+                })    
+            }
+
+            if( results.length > 0 ){
+                // update otp information
+                // create otp information
+                const code = `${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}`;
+                // expire in 2 hours
+                const expire = jwt.sign({email, password}, process.env.JWT_SECRET, {expiresIn: '2h'});
+
+                return res.status(500).json({
+                    status: true,
+                    message: 'test token',
+                })
+                
+            }else{
+                // create otp information
+                const code = `${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}`;
+                // expire in 2 hours
+                const expire = jwt.sign({email, password}, process.env.JWT_SECRET, {expiresIn: '2h'});
+
+                return res.status(500).json({
+                    status: true,
+                    message: 'test token',
+                })
+                   
+            }
+
+
+        });
 
         // db.execute("SELECT * FROM users WHERE email = ?",[email],(err, results, fields)=>{
-        //     if(err){
-        //         return res.status(500).json({
-        //             status: false,
-        //             message: 'An error occurred',
-        //             error: err
-
-        //         })    
-        //     }
+        
 
         //     // console.log(results)
         //     if( results.length > 0 ){
