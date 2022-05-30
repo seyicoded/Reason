@@ -279,7 +279,7 @@ const requestOtpController = async(req, res)=>{
                 // create otp information
                 const code = `${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}`;
                 // expire in 2 hours
-                const expire = jwt.sign({email, password}, process.env.JWT_SECRET, {expiresIn: '2h'});
+                const expire = jwt.sign({email, password}, process.env.JWT_SECRET_TOKEN_SECRET, {expiresIn: '2h'});
 
                 return res.status(500).json({
                     status: true,
@@ -290,7 +290,7 @@ const requestOtpController = async(req, res)=>{
                 // create otp information
                 const code = `${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}`;
                 // expire in 2 hours
-                const expire = jwt.sign({email, password}, process.env.JWT_SECRET, {expiresIn: '2h'});
+                const expire = jwt.sign({email, password}, process.env.JWT_SECRET_TOKEN_SECRET, {expiresIn: '2h'});
 
                 return res.status(500).json({
                     status: true,
