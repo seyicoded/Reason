@@ -298,7 +298,7 @@ const requestOtpController = async(req, res)=>{
                     status: true,
                     message: 'test token',
                     data: expire,
-                    code:
+                    code: code
                 })
                    
             }
