@@ -276,30 +276,61 @@ const requestOtpController = async(req, res)=>{
 
             if( results.length > 0 ){
                 // update otp information
-                // create otp information
                 const code = `${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}`;
                 // expire in 2 hours
-                const expire = jwt.sign({email, password}, process.env.JWT_SECRET_TOKEN_SECRET, {expiresIn: '2h'});
+                const expire = jwt.sign({email, phone}, process.env.JWT_SECRET_TOKEN_SECRET, {expiresIn: '2h'});
+                const status = 0;
+
+                // send otp to both email and phone
+
+                db.execute("UPDATE otp_session SET otp = ?, expire = ?, status = ? WHERE phone = ? AND email = ?", [code, expire, status, phone, email], (err, results, fields)=>{
+                    if(err){
+                        return res.status(500).json({
+                            status: false,
+                            message: 'An error occurred',
+                            error: err
+
+                        })    
+                    }
+
+                    return res.status(200).json({
+                        status: true,
+                        message: 'OTP Sent to both Email and Phone',
+                        expire: 'In 2 hours',
+                    })
+                });
 
                 return res.status(200).json({
                     status: true,
-                    message: 'test token',
-                    data: expire,
-                    code: code
+                    message: 'OTP Sent to both Email and Phone',
+                    expire: 'In 2 hours',
                 })
                 
             }else{
                 // create otp information
                 const code = `${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}`;
                 // expire in 2 hours
-                const expire = jwt.sign({email, password}, process.env.JWT_SECRET_TOKEN_SECRET, {expiresIn: '2h'});
+                const expire = jwt.sign({email, phone}, process.env.JWT_SECRET_TOKEN_SECRET, {expiresIn: '2h'});
+                const status = 0;
 
-                return res.status(200).json({
-                    status: true,
-                    message: 'test token',
-                    data: expire,
-                    code: code
-                })
+                // send otp to both email and phone
+
+                db.execute("INSERT INTO otp_session (phone, email, otp, expire, status) VALUES (?,?,?,?,?)", [phone, email, code, expire, status], (err, results, fields)=>{
+                    if(err){
+                        return res.status(500).json({
+                            status: false,
+                            message: 'An error occurred',
+                            error: err
+
+                        })    
+                    }
+
+                    return res.status(200).json({
+                        status: true,
+                        message: 'OTP Sent to both Email and Phone',
+                        expire: 'In 2 hours',
+                    })
+                });
                    
             }
 
