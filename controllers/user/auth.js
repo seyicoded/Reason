@@ -262,7 +262,7 @@ const verify_account = async(req,res)=>{
 const requestOtpController = async(req, res)=>{
     try{
         const {phone, email} = req.body;
-        // return res.send(`${phone}- ${email}`);
+        return res.send(`${phone}- ${email}`);
 
         db.execute("SELECT * FROM otp_session WHERE phone = ? AND email = ?", [phone, email], (err, results, fields)=>{
             if(err){
