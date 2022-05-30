@@ -262,7 +262,7 @@ const verify_account = async(req,res)=>{
 const requestOtpController = async(req, res)=>{
     try{
         const {phone, email} = req.body;
-        return res.send(`${phone}- ${email}`);
+        // return res.send(`${phone}- ${email}`);
 
         db.execute("SELECT * FROM otp_session WHERE phone = ? AND email = ?", [phone, email], (err, results, fields)=>{
             if(err){
@@ -283,12 +283,12 @@ const requestOtpController = async(req, res)=>{
 
                 // send otp to both email and phone
 
-                db.execute("UPDATE otp_session SET otp = ?, expire = ?, status = ? WHERE phone = ? AND email = ?", [code, expire, status, phone, email], (err, results, fields)=>{
-                    if(err){
+                db.execute("UPDATE otp_session SET otp = ?, expire = ?, status = ? WHERE phone = ? AND email = ?", [code, expire, status, phone, email], (err1, results1, fields1)=>{
+                    if(err1){
                         return res.status(500).json({
                             status: false,
                             message: 'An error occurred',
-                            error: err
+                            error: err1
 
                         })    
                     }
@@ -299,12 +299,6 @@ const requestOtpController = async(req, res)=>{
                         expire: 'In 2 hours',
                     })
                 });
-
-                return res.status(200).json({
-                    status: true,
-                    message: 'OTP Sent to both Email and Phone',
-                    expire: 'In 2 hours',
-                })
                 
             }else{
                 // create otp information
@@ -315,8 +309,8 @@ const requestOtpController = async(req, res)=>{
 
                 // send otp to both email and phone
 
-                db.execute("INSERT INTO otp_session (phone, email, otp, expire, status) VALUES (?,?,?,?,?)", [phone, email, code, expire, status], (err, results, fields)=>{
-                    if(err){
+                db.execute("INSERT INTO otp_session (phone, email, otp, expire, status) VALUES (?,?,?,?,?)", [phone, email, code, expire, status], (err1, results1, fields)=>{
+                    if(err1){
                         return res.status(500).json({
                             status: false,
                             message: 'An error occurred',
@@ -336,60 +330,6 @@ const requestOtpController = async(req, res)=>{
 
 
         });
-
-        // db.execute("SELECT * FROM users WHERE email = ?",[email],(err, results, fields)=>{
-        
-
-        //     // console.log(results)
-        //     if( results.length > 0 ){
-        //         (async()=>{
-        //             // generate random code
-        //             const code = `${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}${Math.floor((Math.random() * 9) + 1)}`;
-        //             db.execute("UPDATE users SET code = ? WHERE email = ?", [code, email], (errs, resultss)=>{
-        //                 if(errs){
-        //                     return res.status(500).json({
-        //                         status: false,
-        //                         message: 'An error occurred',
-        //                         error: err
-            
-        //                     })    
-        //                 }
-
-        //                 // send mail and return success
-        //                 (async()=>{
-        //                     try {
-        //                         await sendMail({
-        //                             to: email,
-        //                             subject: 'OTP FOR ACCOUNT RECOVERY',
-        //                             html: `
-        //                                 <h1 style='text-align: center'>USE THE CODE TO CHANGE YOUR PASSWORD</h1>
-        //                                 <div style='text-align: center; font-weight: bolder; font-size: 23px'>${code}</div>
-        //                             `,
-        //                         })  
-                                
-        //                         return res.status(200).json({
-        //                             status: true,
-        //                             message: 'OTP Sent to Mail'
-                
-        //                         })
-        //                     } catch (error) {
-        //                         console.log(error)
-        //                     }
-        //                 })()
-        //             });
-        //         })()
-                
-        //     }else{
-        //         return res.status(500).json({
-        //             status: false,
-        //             message: 'User doesn\'t exist',
-        //             error: []
-
-        //         })  
-        //     }
-
-                
-        // });
     }catch(e){
         console.log(error)
         return res.status(500).json({
