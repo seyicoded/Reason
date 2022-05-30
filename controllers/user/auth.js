@@ -388,7 +388,7 @@ const verifyOtpController = async (req, res)=>{
             }else{
                 return res.status(500).json({
                     status: false,
-                    message: 'OTP Already Verified',
+                    message: 'OTP Already Used',
                     error: []
                 })  
             }
