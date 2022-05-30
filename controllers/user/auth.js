@@ -281,9 +281,11 @@ const requestOtpController = async(req, res)=>{
                 // expire in 2 hours
                 const expire = jwt.sign({email, password}, process.env.JWT_SECRET_TOKEN_SECRET, {expiresIn: '2h'});
 
-                return res.status(500).json({
+                return res.status(200).json({
                     status: true,
                     message: 'test token',
+                    data: expire,
+                    code: code
                 })
                 
             }else{
@@ -292,9 +294,11 @@ const requestOtpController = async(req, res)=>{
                 // expire in 2 hours
                 const expire = jwt.sign({email, password}, process.env.JWT_SECRET_TOKEN_SECRET, {expiresIn: '2h'});
 
-                return res.status(500).json({
+                return res.status(200).json({
                     status: true,
                     message: 'test token',
+                    data: expire,
+                    code:
                 })
                    
             }
