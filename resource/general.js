@@ -47,7 +47,7 @@ const sendSMS = async({to, body})=>{
 
         console.log(phone)
         
-        const otp =await axios({
+        await axios({
           method: "POST",
           url: "https://api.ng.termii.com/api/sms/send",
           data: {

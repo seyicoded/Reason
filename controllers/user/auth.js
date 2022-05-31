@@ -281,7 +281,7 @@ const requestOtpController = async(req, res)=>{
                 const expire = jwt.sign({email, phone}, process.env.JWT_SECRET_TOKEN_SECRET, {expiresIn: '2h'});
                 const status = 0;
                 
-                const message= `Use ${code} to verify yourself on the app`;
+                const message= `Use ${code} to verify yourself on the Reasns app`;
 
                 // send otp to both email and phone
                 (async()=>{
@@ -313,7 +313,7 @@ const requestOtpController = async(req, res)=>{
                 const expire = jwt.sign({email, phone}, process.env.JWT_SECRET_TOKEN_SECRET, {expiresIn: '2h'});
                 const status = 0;
                 
-                const message= `Use ${code} to verify yourself on the app`;
+                const message= `Use ${code} to verify yourself on the Reasns app`;
 
                 // send otp to both email and phone
                 (async()=>{
