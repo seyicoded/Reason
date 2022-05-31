@@ -9,6 +9,7 @@ app.use(cors())
 
 // import routes
 const userAuthRoutes = require('./routes/user/auth');
+const userProfileRoutes = require('./routes/user/profile');
 const adminAuthRoutes = require('./routes/admin/auth');
 const adminProfileRoutes = require('./routes/admin/profile');
 
@@ -26,6 +27,7 @@ app.get('/', (req, res)=>{
 
 // api v1
 app.use('/v1', userAuthRoutes)
+app.use('/v1', userProfileRoutes)
 app.use('/v1', adminAuthRoutes)
 app.use('/v1', adminProfileRoutes)
 app.get('/user/account-validate/:token', verify_account)
