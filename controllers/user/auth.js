@@ -286,7 +286,7 @@ const requestOtpController = async(req, res)=>{
                 // send otp to both email and phone
                 (async()=>{
                     sendMail(email, "OTP From Reasns", message);
-                    sendSMS({phone, message});
+                    sendSMS({to: phone, body: message});
                 })()
 
                 db.execute("UPDATE otp_session SET otp = ?, expire = ?, status = ? WHERE phone = ? AND email = ?", [code, expire, status, phone, email], (err1, results1, fields1)=>{
