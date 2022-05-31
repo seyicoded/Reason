@@ -56,7 +56,7 @@ const sendSMS = async({to, body})=>{
             "type": "plain",
             "sms": body,
             "channel": "dnd",
-            "termii_api_key": process.env.TERMII_API_KEY,
+            "api_key": process.env.TERMII_API_KEY,
           }
         })
         // resolve(otp);
