@@ -33,7 +33,6 @@ const sendMail = async(to, subject, message)=>{
 const sendSMS = async({to, body})=>{
     try {
         // for now sms info is static
-        console.log(to)
         var phone = to.toString();
   
         // filter phone
@@ -45,8 +44,10 @@ const sendSMS = async({to, body})=>{
         if(parseInt(phone.substring(0, 1)) == 0){
           phone = "234"+phone.substr(1);
         }
+
+        console.log(phone)
         
-        const otp = axios({
+        const otp =await axios({
           method: "POST",
           url: "https://api.ng.termii.com/api/sms/send",
           data: {
