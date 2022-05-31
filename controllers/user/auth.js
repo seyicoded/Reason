@@ -2,7 +2,7 @@ const {getDB} = require('../../db/index')
 const db = getDB;
 const bcrypt = require('bcryptjs');
 const {generateJwtToken, generateJwtTokenForEmailValidate, verify_token_extract} = require('../../middlewares/jwt')
-const {sendMail} = require('../../resource/general.js')
+const {sendMail, sendSMS} = require('../../resource/general.js')
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
 // const url = require('url');
@@ -285,7 +285,8 @@ const requestOtpController = async(req, res)=>{
 
                 // send otp to both email and phone
                 (async()=>{
-                    sendMail(email, "OTP From Reasns", message)
+                    sendMail(email, "OTP From Reasns", message);
+                    sendSMS(phone, message);
                 })()
 
                 db.execute("UPDATE otp_session SET otp = ?, expire = ?, status = ? WHERE phone = ? AND email = ?", [code, expire, status, phone, email], (err1, results1, fields1)=>{

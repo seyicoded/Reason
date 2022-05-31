@@ -29,8 +29,39 @@ const sendMail = async(to, subject, message)=>{
     
 }
 
-const sendSMS = async()=>{
-
+const sendSMS = async({to, body})=>{
+    try {
+        // for now sms info is static
+        console.log(to)
+        var phone = to.toString();
+  
+        // filter phone
+        // phone = phone.replaceAll("+",'');
+        if((phone.substring(0, 1)).toString() == "+"){
+          phone = phone.substr(1);
+        }
+  
+        if(parseInt(phone.substring(0, 1)) == 0){
+          phone = "234"+phone.substr(1);
+        }
+        
+        const otp = axios({
+          method: "POST",
+          url: "https://api.ng.termii.com/api/sms/send",
+          data: {
+            "to": phone,
+            "from": "N-Alert",
+            "type": "plain",
+            "sms": body,
+            "channel": "dnd",
+            "termii_api_key": process.env.TERMII_API_KEY,
+          }
+        })
+        resolve(otp);
+      } catch (error) {
+        console.log(error);
+        reject(error);
+    }
 }
 
 module.exports = {
