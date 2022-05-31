@@ -25,7 +25,7 @@ const uploadMainMediaController = async (req, res)=>{
     const user_id = (await req.user).u_id;
 
     // check if main profile already exist
-    db.execute("SELECT * FROM users_image WHERE u_id = ?", [user_id], (err, results)=>{
+    db.execute("SELECT * FROM users_images WHERE u_id = ?", [user_id], (err, results)=>{
         if(err){
             return res.status(500).json({
                 status: false,
@@ -60,7 +60,7 @@ const uploadMainMediaController = async (req, res)=>{
         
                 const url = await uploadFile(`${media.filepath}`, originalFilename)
     
-                db.execute("UPDATE users_image SET image = ? WHERE u_id = ?", [url, user_id], (err, results)=>{
+                db.execute("UPDATE users_images SET image = ? WHERE u_id = ?", [url, user_id], (err, results)=>{
                     if(err){
                         return res.status(500).json({
                             status: false,
