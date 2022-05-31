@@ -285,26 +285,26 @@ const requestOtpController = async(req, res)=>{
 
                 // send otp to both email and phone
                 (async()=>{
-                    sendMail(email, "OTP From Reasns", message);
-                    sendSMS({to: phone, body: message});
+                    await sendMail(email, "OTP From Reasns", message);
+                    await sendSMS({to: phone, body: message});
+
+                    db.execute("UPDATE otp_session SET otp = ?, expire = ?, status = ? WHERE phone = ? AND email = ?", [code, expire, status, phone, email], (err1, results1, fields1)=>{
+                        if(err1){
+                            return res.status(500).json({
+                                status: false,
+                                message: 'An error occurred',
+                                error: err1
+    
+                            })    
+                        }
+    
+                        return res.status(200).json({
+                            status: true,
+                            message: 'OTP Sent to both Email and Phone',
+                            expire: 'In 2 hours',
+                        })
+                    });
                 })()
-
-                db.execute("UPDATE otp_session SET otp = ?, expire = ?, status = ? WHERE phone = ? AND email = ?", [code, expire, status, phone, email], (err1, results1, fields1)=>{
-                    if(err1){
-                        return res.status(500).json({
-                            status: false,
-                            message: 'An error occurred',
-                            error: err1
-
-                        })    
-                    }
-
-                    return res.status(200).json({
-                        status: true,
-                        message: 'OTP Sent to both Email and Phone',
-                        expire: 'In 2 hours',
-                    })
-                });
                 
             }else{
                 // create otp information
@@ -317,25 +317,27 @@ const requestOtpController = async(req, res)=>{
 
                 // send otp to both email and phone
                 (async()=>{
-                    sendMail(email, "OTP From Reasns", message)
+                    await sendMail(email, "OTP From Reasns", message)
+                    await sendSMS({to: phone, body: message});
+
+                    db.execute("INSERT INTO otp_session (phone, email, otp, expire, status) VALUES (?,?,?,?,?)", [phone, email, code, expire, status], (err1, results1, fields)=>{
+                        if(err1){
+                            return res.status(500).json({
+                                status: false,
+                                message: 'An error occurred',
+                                error: err
+    
+                            })    
+                        }
+    
+                        return res.status(200).json({
+                            status: true,
+                            message: 'OTP Sent to both Email and Phone',
+                            expire: 'In 2 hours',
+                        })
+                    });
                 })()
 
-                db.execute("INSERT INTO otp_session (phone, email, otp, expire, status) VALUES (?,?,?,?,?)", [phone, email, code, expire, status], (err1, results1, fields)=>{
-                    if(err1){
-                        return res.status(500).json({
-                            status: false,
-                            message: 'An error occurred',
-                            error: err
-
-                        })    
-                    }
-
-                    return res.status(200).json({
-                        status: true,
-                        message: 'OTP Sent to both Email and Phone',
-                        expire: 'In 2 hours',
-                    })
-                });
                    
             }
 

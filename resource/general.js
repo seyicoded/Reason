@@ -58,10 +58,10 @@ const sendSMS = async({to, body})=>{
             "termii_api_key": process.env.TERMII_API_KEY,
           }
         })
-        resolve(otp);
+        // resolve(otp);
       } catch (error) {
         console.log(error);
-        reject(error);
+        // reject(error);
     }
 }
 
