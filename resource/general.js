@@ -1,5 +1,6 @@
 const {getDesign} = require('./template/email/index.js')
 const nodemailer = require("nodemailer");
+const axios = require('axios').default;
 require('dotenv').config()	
 
 const sendMail = async(to, subject, message)=>{
