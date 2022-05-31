@@ -2,7 +2,7 @@ const {getDB} = require('../../db/index')
 const db = getDB;
 const bcrypt = require('bcryptjs');
 const {generateJwtToken, generateJwtTokenForEmailValidate, verify_token_extract} = require('../../middlewares/jwt')
-const {sendMail} = require('../../mailer')
+const {sendMail} = require('../../resource/general.js')
 const jwt = require('jsonwebtoken');
 require('dotenv').config()
 // const url = require('url');
@@ -280,8 +280,13 @@ const requestOtpController = async(req, res)=>{
                 // expire in 2 hours
                 const expire = jwt.sign({email, phone}, process.env.JWT_SECRET_TOKEN_SECRET, {expiresIn: '2h'});
                 const status = 0;
+                
+                const message= `Use ${code} to verify yourself on the app`;
 
                 // send otp to both email and phone
+                (async()=>{
+                    sendMail(email, "OTP From Reasns", message)
+                })()
 
                 db.execute("UPDATE otp_session SET otp = ?, expire = ?, status = ? WHERE phone = ? AND email = ?", [code, expire, status, phone, email], (err1, results1, fields1)=>{
                     if(err1){
@@ -306,8 +311,13 @@ const requestOtpController = async(req, res)=>{
                 // expire in 2 hours
                 const expire = jwt.sign({email, phone}, process.env.JWT_SECRET_TOKEN_SECRET, {expiresIn: '2h'});
                 const status = 0;
+                
+                const message= `Use ${code} to verify yourself on the app`;
 
                 // send otp to both email and phone
+                (async()=>{
+                    sendMail(email, "OTP From Reasns", message)
+                })()
 
                 db.execute("INSERT INTO otp_session (phone, email, otp, expire, status) VALUES (?,?,?,?,?)", [phone, email, code, expire, status], (err1, results1, fields)=>{
                     if(err1){
