@@ -2,7 +2,8 @@ const express = require("express");
 const app = express.Router();
 const {
     uploadMainMediaController,
-    uploadOtherMediaController} =  require('../../controllers/user/profile')
+    uploadOtherMediaController,
+    deleteOtherMediaController} =  require('../../controllers/user/profile')
 
 const {
     verifyUsersToken
@@ -10,6 +11,7 @@ const {
 
 app.post('/profile/upload-main-media', verifyUsersToken, uploadMainMediaController)
 app.post('/profile/upload-other-media', verifyUsersToken, uploadOtherMediaController)
+app.delete('/profile/delete-other-media', verifyUsersToken, deleteOtherMediaController)
 // upload-other-media
 
 

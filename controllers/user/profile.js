@@ -168,7 +168,33 @@ const uploadOtherMediaController = async(req, res)=>{
     })
 }
 
+const deleteOtherMediaController = async(req, res)=>{
+    const user_id = (await req.user).u_id;
+
+    const media_id = (req.query.media_id)
+
+    // delete media from db and return output
+    db.execute("DELETE FROM user_medias WHERE id = ?", [media_id], (err, results)=>{
+        if(err){
+            return res.status(500).json({
+                status: false,
+                message: 'an error occurred',
+                error: err
+            })
+        }
+
+        if(results.affectedRows > 0){
+            return res.status(201).json({
+                status: true,
+                message: 'Media successfully deleted',
+                results: results
+            })
+        }
+    })
+}
+
 module.exports = {
     uploadMainMediaController,
-    uploadOtherMediaController
+    uploadOtherMediaController,
+    deleteOtherMediaController
 }
