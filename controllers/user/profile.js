@@ -127,6 +127,11 @@ const uploadMainMediaController = async (req, res)=>{
     
 }
 
+const uploadOtherMediaController = async(req, res)=>{
+
+}
+
 module.exports = {
-    uploadMainMediaController
+    uploadMainMediaController,
+    uploadOtherMediaController
 }
