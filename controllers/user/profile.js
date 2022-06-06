@@ -6,11 +6,18 @@ const { v4: uuidv4 } = require('uuid');
 
 const storageRef = firebase.storage().bucket('gs://reasnsapp.appspot.com');
 
-const uploadFile = async(path, filename) => {
+const uploadFile = async(path, filename, others) => {
     // Upload the File
+    let dest;
+    if(others){
+        dest = `/uploads/other_media/${filename}`;
+    }else{
+        dest = `/uploads/main_media/${filename}`;
+    }
+
     const storage = await storageRef.upload(path, {
         public: true,
-        destination: `/uploads/main_media/${filename}`,
+        destination: dest,
         metadata: {
             firebaseStorageDownloadTokens: uuidv4(),
         }
@@ -35,14 +42,7 @@ const uploadMainMediaController = async (req, res)=>{
         }
 
         if(results.length > 0){
-            if(results[0].main_media){
-                return res.status(500).json({
-                    status: false,
-                    message: 'Main media already exist',
-                    error: 'error'
-                })
-            }
-
+            
             form.parse(req, async (err2, fields, files)=>{
                 if(err2){
                     return res.status(500).json({
@@ -72,7 +72,7 @@ const uploadMainMediaController = async (req, res)=>{
                     if(results.affectedRows > 0){
                         return res.status(201).json({
                             status: true,
-                            message: 'Main media successfully uploaded',
+                            message: 'Main media successfully updated',
                             results: results
                         })
                     }else{
@@ -128,7 +128,44 @@ const uploadMainMediaController = async (req, res)=>{
 }
 
 const uploadOtherMediaController = async(req, res)=>{
+    const form = formidable({ multiples: true });
+    const user_id = (await req.user).u_id;
 
+    
+    form.parse(req, async (err, fields, files) => {
+        const media = (files.media);
+        let originalFilename = media.originalFilename;
+        let originalFilenameArr = originalFilename.split('.')
+        let fileExtension = originalFilenameArr[originalFilenameArr.length - 1]
+        originalFilename = `${uuidv4()}.${fileExtension}`;
+
+        const url = await uploadFile(`${media.filepath}`, originalFilename, true)
+
+        db.execute("INSERT INTO user_medias(id, u_id, media, status) VALUES(?, ?, ?, ?)",[uuidv4(), user_id, url, 1],(err1, results, fields)=>{
+            if(err1){
+                return res.status(500).json({
+                    status: false,
+                    message: 'an error occurred',
+                    error: err
+                })
+            }
+
+            if(results.affectedRows > 0){
+                return res.status(201).json({
+                    status: true,
+                    message: 'Main media successfully uploaded/Added',
+                    results: results,
+                    url: url
+                })
+            }else{
+                return res.status(500).json({
+                    status: false,
+                    message: 'an error occurred',
+                    error: 'error'
+                })
+            }
+        })
+    })
 }
 
 module.exports = {
