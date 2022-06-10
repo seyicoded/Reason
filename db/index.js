@@ -1,4 +1,5 @@
 const mysql = require('mysql2');
+// const mysqlp = require('mysql2/promise');
 require('dotenv').config()
 
 // MYSQL_USERNAME=
@@ -48,7 +49,7 @@ setInterval(function () {
 }, 5000);
 
 module.exports = {
-    getDB: db
+    getDB: db,
 }
 
 // 3106-2737-3951

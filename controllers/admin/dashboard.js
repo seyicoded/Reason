@@ -3,12 +3,12 @@ const db = getDB;
 
 const getAll = async (req, res)=>{
     try{
-        const admin = await db.execute("SELECT * FROM admins");
-        const active_admin = await db.execute("SELECT * FROM admins WHERE status = 1");
-        const blocked_admin = await db.execute("SELECT * FROM admins WHERE status = 2");
-        const inactive_admin = await db.execute("SELECT * FROM admins WHERE status = 0");
-        const user = await db.execute("SELECT * FROM users");
-        const inactive_user = await db.execute("SELECT * FROM users = 2");
+        const admin = await db.promise().query("SELECT * FROM admins");
+        const active_admin = await db.promise().query("SELECT * FROM admins WHERE status = 1");
+        const blocked_admin = await db.promise().query("SELECT * FROM admins WHERE status = 2");
+        const inactive_admin = await db.promise().query("SELECT * FROM admins WHERE status = 0");
+        const user = await db.promise().query("SELECT * FROM users");
+        const inactive_user = await db.promise().query("SELECT * FROM users = 2");
         return res.status(200).json({
             status: true,
             message: 'success',
