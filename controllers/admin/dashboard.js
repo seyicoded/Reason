@@ -8,7 +8,7 @@ const getAll = async (req, res)=>{
         const blocked_admin = await db.promise().query("SELECT * FROM admins WHERE status = 2");
         const inactive_admin = await db.promise().query("SELECT * FROM admins WHERE status = 0");
         const user = await db.promise().query("SELECT * FROM users");
-        const inactive_user = await db.promise().query("SELECT * FROM users = 2");
+        const inactive_user = await db.promise().query("SELECT * FROM users WHERE status = 2");
         return res.status(200).json({
             status: true,
             message: 'success',
