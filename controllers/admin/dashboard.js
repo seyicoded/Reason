@@ -9,7 +9,7 @@ const getAll = async (req, res)=>{
         if(year != undefined){
             year = " LIKE '%"+year+"%'";
         }else{
-            year = date('Y');
+            year = (new Date()).getFullYear();
             year = " LIKE '%"+year+"%'";
         }
 
