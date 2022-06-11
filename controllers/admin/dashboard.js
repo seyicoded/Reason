@@ -10,6 +10,7 @@ const getAll = async (req, res)=>{
             year = " LIKE '%"+year+"%'";
         }else{
             year = date('Y');
+            year = " LIKE '%"+year+"%'";
         }
 
         const admin = (await db.promise().query("SELECT * FROM admins WHERE date_created"+year))[0];
