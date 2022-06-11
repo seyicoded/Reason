@@ -3,12 +3,21 @@ const db = getDB;
 
 const getAll = async (req, res)=>{
     try{
-        const admin = (await db.promise().query("SELECT * FROM admins"))[0];
-        const active_admin = (await db.promise().query("SELECT * FROM admins WHERE status = 1"))[0];
-        const blocked_admin = (await db.promise().query("SELECT * FROM admins WHERE status = 2"))[0];
-        const inactive_admin = (await db.promise().query("SELECT * FROM admins WHERE status = 0"))[0];
-        const user = (await db.promise().query("SELECT * FROM users"))[0];
-        const inactive_user = (await db.promise().query("SELECT * FROM users WHERE status = 2"))[0];
+
+        let year = req.params.year;
+
+        if(year != null){
+            year = " LIKE '%"+year+"%'";
+        }else{
+            year = date('Y');
+        }
+
+        const admin = (await db.promise().query("SELECT * FROM admins WHERE date_created"+year))[0];
+        const active_admin = (await db.promise().query("SELECT * FROM admins WHERE status = 1 AND date_created"+year))[0];
+        const blocked_admin = (await db.promise().query("SELECT * FROM admins WHERE status = 2 AND date_created"+year))[0];
+        const inactive_admin = (await db.promise().query("SELECT * FROM admins WHERE status = 0 AND date_created"+year))[0];
+        const user = (await db.promise().query("SELECT * FROM users WHERE date_created"+year))[0];
+        const inactive_user = (await db.promise().query("SELECT * FROM users WHERE status = 2 AND date_created"+year))[0];
         return res.status(200).json({
             status: true,
             message: 'success',
