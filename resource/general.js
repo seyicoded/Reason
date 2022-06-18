@@ -1,7 +1,49 @@
 const {getDesign} = require('./template/email/index.js')
 const nodemailer = require("nodemailer");
 const axios = require('axios').default;
-require('dotenv').config()	
+const Distance = require('geo-distance');
+const Pusher = require('pusher');
+require('dotenv').config()
+
+var pusher = null;
+const pusher_presence_channel_name = "presence-online";
+
+const initPusher = ()=>{
+  pusher = new Pusher({
+    appId: "1425412",
+    key: "2c664ca34e33663c572f",
+    secret: "c1c8262a2473c99993b0",
+    cluster: "mt1",
+    useTLS: true
+  });
+
+  return pusher;
+}
+
+const filterByInterest = (PeoplesData, myData)=>{
+  return PeoplesData;
+}
+
+const getOnlineStatus = async (pusherObject, u_id)=>{
+    const presence_user = await pusherObject.get({ path: `/channels/${pusher_presence_channel_name}/users` })
+    console.log(presence_user)
+    // console.log(presence_user.users)
+    try{
+      presence_user.users.forEach(user=>{
+        if(user.id == u_id){
+          return true;
+        }
+      })
+    }catch(e){
+      console.log(e)
+    }
+
+    return false;
+}
+
+const getDistanceInMeter = async (me, person)=>{
+    return Distance.between(me, person).human_readable();
+}
 
 const sendMail = async(to, subject, message)=>{
     try{
@@ -68,5 +110,11 @@ const sendSMS = async({to, body})=>{
 
 module.exports = {
     sendMail,
-    sendSMS
+    sendSMS,
+    getOnlineStatus,
+    getDistanceInMeter,
+    initPusher,
+    filterByInterest,
+    pusher_presence_channel_name,
+    pusherObject: pusher
 }

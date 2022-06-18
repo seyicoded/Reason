@@ -18,12 +18,14 @@
     "express": "^4.17.3",
     "firebase-admin": "^10.2.0",
     "formidable": "^2.0.1",
+    "geo-distance": "^0.2.0",
     "global": "^4.4.0",
     "jsonwebtoken": "^8.5.1",
     "moment": "^2.29.3",
     "mysql2": "^2.3.3",
     "nodemailer": "^6.7.2",
     "nodemon": "^2.0.16",
+    "pusher": "^5.1.0-beta",
     "uuid": "^8.3.2"
   }
 }

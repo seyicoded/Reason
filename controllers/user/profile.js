@@ -141,7 +141,7 @@ const uploadOtherMediaController = async(req, res)=>{
 
         const url = await uploadFile(`${media.filepath}`, originalFilename, true)
 
-        db.execute("INSERT INTO user_medias(id, u_id, media, status) VALUES(?, ?, ?, ?)",[uuidv4(), user_id, url, 1],(err1, results, fields)=>{
+        db.execute("INSERT INTO user_medias(id, u_id, media, status, extension) VALUES(?, ?, ?, ?, ?)",[uuidv4(), user_id, url, 1, fileExtension],(err1, results, fields)=>{
             if(err1){
                 return res.status(500).json({
                     status: false,
@@ -193,8 +193,48 @@ const deleteOtherMediaController = async(req, res)=>{
     })
 }
 
+const updateLocationController = async(req, res)=>{
+    const user_id = (await req.user).u_id;
+
+    // update user location
+    const data = (await db.promise().query("UPDATE users SET lat = ?, lng = ? WHERE u_id = ?", [req.body.lat, req.body.lng, user_id]))[0];
+
+    if(data.affectedRows > 0){
+        return res.status(200).json({
+            status: true,
+            message: 'successfully changed',
+            data: null
+        })
+    }else{
+        return res.status(200).json({
+            status: true,
+            message: 'same as previous location',
+            data: null
+        })
+    }
+    
+}
+
+const getController = async(req, res)=>{
+    const user_id = (await req.user).u_id;
+
+    const data = (await db.promise().query("SELECT * FROM users AS user_data INNER JOIN users_images AS user_image ON user_data.u_id = user_image.u_id WHERE user_data.u_id = ?", [user_id]))[0][0];
+    const other_media = (await db.promise().query("SELECT * FROM user_medias WHERE u_id = ?", [user_id]))[0];
+
+    delete data.main_image;
+
+    return res.status(200).json({
+        status: true,
+        message: 'successfully fetched',
+        data: data,
+        all_medias: other_media
+    })
+}
+
 module.exports = {
     uploadMainMediaController,
     uploadOtherMediaController,
-    deleteOtherMediaController
+    deleteOtherMediaController,
+    updateLocationController,
+    getController
 }
