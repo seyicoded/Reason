@@ -23,15 +23,16 @@ const getPeopleController = async (req, res)=>{
     const isSorting = req.body.isSorting;
 
     let returns = [];
+    const Peoples = filterByInterest((await db.promise().query("SELECT * FROM users AS user_data WHERE user_data.u_id != ?", [user_id]))[0], myData);
 
     if(isSorting == 'true'){
         // sort it
+        return getSortedPeople(req, res, myData, myLatitude, myLongitude, Peoples);
     }
 
     // just don't sort it
 
     // const Peoples = (await db.promise().query("SELECT * FROM users AS user_data WHERE user_data.u_id != ?", [user_id]))[0];
-    const Peoples = filterByInterest((await db.promise().query("SELECT * FROM users AS user_data WHERE user_data.u_id != ?", [user_id]))[0], myData);
 
     for (let index = 0; index < Peoples.length; index++) {
         const element = Peoples[index];
@@ -58,6 +59,20 @@ const getPeopleController = async (req, res)=>{
         data: returns,
     })
     
+}
+
+const getSortedPeople = async (req, res, myData, myLatitude, myLongitude, Peoples)=>{
+    let returns = [];
+
+    // start
+    
+    // stop
+
+    return res.status(200).json({
+        status: true,
+        message: 'successfully fetched',
+        data: returns,
+    })
 }
 
 module.exports = {
