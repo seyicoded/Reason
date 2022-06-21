@@ -23,7 +23,7 @@ const getPeopleController = async (req, res)=>{
     const isSorting = req.body.isSorting;
 
     let returns = [];
-    const Peoples = filterByInterest((await db.promise().query("SELECT * FROM users AS user_data WHERE user_data.u_id != ?", [user_id]))[0], myData);
+    const Peoples = filterByInterest((await db.promise().query("SELECT * FROM users AS user_data WHERE user_data.u_id = ?", [user_id]))[0], myData);
 
     if(isSorting == 'true'){
         // sort it
