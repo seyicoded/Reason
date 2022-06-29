@@ -23,7 +23,7 @@ const getPeopleController = async (req, res)=>{
     const isSorting = req.body.isSorting;
 
     let returns = [];
-    const Peoples = filterByInterest((await db.promise().query("SELECT * FROM users AS user_data WHERE user_data.u_id = ?", [user_id]))[0], myData);
+    const Peoples = filterByInterest((await db.promise().query("SELECT * FROM users AS user_data WHERE user_data.u_id != ?", [user_id]))[0], myData);
 
     if(isSorting == 'true'){
         // sort it
@@ -75,6 +75,85 @@ const getSortedPeople = async (req, res, myData, myLatitude, myLongitude, People
     })
 }
 
+const sendLikeRequestController = async (req, res)=>{
+    // logic
+    
+    try{
+        const user_id = (await req.user).u_id;
+        const {user_id: reciever_id} = req.body
+
+        // check if same entry already exist:: throw success error of already linked
+        // check if user(me) already linked by other person:: check if pending then merge while ignore 
+        // else create new entry attributed to pending
+
+        // checker 1
+        const entry_checker_1 = await db.promise().query("SELECT * FROM like_linker WHERE sender_id= ? AND reciever_id = ?", [user_id, reciever_id])[0];
+        if((entry_checker_1).length != 0){
+            // exact entry of user trying to like the other user exist
+            return res.status(200).json({
+                status: true,
+                newlyMerged: false,
+                message: 'Already sent liked request in the past',
+            })
+        }
+
+        // checker 2
+        const entry_checker_2 = await db.promise().query("SELECT * FROM like_linker WHERE sender_id= ? AND reciever_id = ?", [reciever_id, user_id])[0];
+        if((entry_checker_2).length != 0){
+            // exact entry of user already liked by other user exist, update entry and merge them
+            // check if existing data is pending process merging
+            const _dt = entry_checker_2[0];
+            if(parseInt(_dt.status) == 0){
+                // process merging
+                const r = await db.promise().query("UPDATE like_linker SET status = ? WHERE ll_id = ?", [1, _dt.ll_id])[0]
+
+                try{
+                    // send push notification to receiver
+                }catch(e){}
+                return res.status(200).json({
+                    status: true,
+                    newlyMerged: true,
+                    message: 'Already merged with user',
+                })
+            }else{
+                return res.status(200).json({
+                    status: true,
+                    newlyMerged: false,
+                    message: 'Already merged with user',
+                })
+            }
+            
+        }
+
+        // create
+        const r = await db.promise().query("INSERT INTO like_linker(sender_id, reciever_id, status) VALUES(?, ?, ?)", [user_id, reciever_id, 1])[0]
+        if(r.affectedRows > 0){
+            // success
+            // send notification
+            return res.status(200).json({
+                status: true,
+                newlyMerged: false,
+                message: 'Request sent to user',
+            })
+        }else{
+            return res.status(400).json({
+                status: true,
+                newlyMerged: false,
+                message: 'An error occurred',
+            })
+
+        }
+
+    }catch(e){
+        return res.status(200).json({
+            status: false,
+            message: 'An error occurred',
+            data: e,
+        })
+    }
+}
+
 module.exports = {
-    getPeopleController
+    getPeopleController,
+    sendLikeRequestController
 }

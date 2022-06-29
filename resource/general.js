@@ -3,6 +3,7 @@ const nodemailer = require("nodemailer");
 const axios = require('axios').default;
 const Distance = require('geo-distance');
 const Pusher = require('pusher');
+const firebase = require('./firebase')
 require('dotenv').config()
 
 var pusher = null;
@@ -21,6 +22,7 @@ const initPusher = ()=>{
 }
 
 const filterByInterest = (PeoplesData, myData)=>{
+  // automatically filtering my interest using logic of like 
   return PeoplesData;
 }
 
@@ -108,9 +110,33 @@ const sendSMS = async({to, body})=>{
     }
 }
 
+const sendPushNoti = async(title, body, token, noti_payload = null, data = null, shouldLive = false)=>{
+  // token would be ['__token_string1', '__token_string2']
+  let payload = {
+    notification: {
+      title,
+      body,
+      ...noti_payload
+    },
+    data
+  }
+
+  let options = {
+    priority: "high",
+    timeToLive: shouldLive ? (365 * (60 * 60 *24)) :60 * 60 *24
+  }
+
+  const res = (await firebase.messaging().sendToDevice(token, payload, options))
+  
+  console.log(res)
+  
+  return ((res.successCount > 0)) ? true:false
+}
+
 module.exports = {
     sendMail,
     sendSMS,
+    sendPushNoti,
     getOnlineStatus,
     getDistanceInMeter,
     initPusher,
