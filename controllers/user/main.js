@@ -3,7 +3,7 @@ const firebase = require('../../resource/firebase')
 const {getDB} = require('../../db/index')
 const db = getDB;
 const { v4: uuidv4 } = require('uuid');
-const { getOnlineStatus, getDistanceInMeter, filterByInterest } = require('../../resource/general');
+const { getOnlineStatus, getDistanceInMeter, filterByInterest, notifyPartiesOfMerged } = require('../../resource/general');
 
 const { initPusher } = require('../../resource/general');
 
@@ -109,7 +109,11 @@ const sendLikeRequestController = async (req, res)=>{
 
                 try{
                     // send push notification to receiver
-                }catch(e){}
+
+                    await notifyPartiesOfMerged(user_id, reciever_id)
+                }catch(e){
+                    console.log(e)
+                }
                 return res.status(200).json({
                     status: true,
                     newlyMerged: true,
@@ -180,11 +184,15 @@ const acceptLikeRequestController = async (req, res)=>{
         const user_id = (await req.user).u_id;
         const {ll_id} = req.body
 
-        const r = await db.promise().query("UPDATE like_linker SET status = ? WHERE ll_id = ?", [1, _dt.ll_id])[0]
+        const r = await db.promise().query("UPDATE like_linker SET status = ? WHERE ll_id = ?", [1, ll_id])[0]
 
         try{
             // send push notification to receiver
-        }catch(e){}
+            const r__ = await db.promise().query("SELECT * FROM like_linker WHERE ll_id = ?", [ll_id])[0][0]
+            await notifyPartiesOfMerged(r__.sender_id, r__.reciever_id)
+        }catch(e){
+            console.log(e)
+        }
 
         return res.status(200).json({
             status: true,
@@ -209,7 +217,9 @@ const rejectLikeRequestController = async (req, res)=>{
 
         try{
             // send push notification to receiver
-        }catch(e){}
+        }catch(e){
+            console.log(e)
+        }
 
         return res.status(200).json({
             status: true,

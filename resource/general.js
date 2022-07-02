@@ -133,6 +133,27 @@ const sendPushNoti = async(title, body, token, noti_payload = null, data = null,
   return ((res.successCount > 0)) ? true:false
 }
 
+const notifyPartiesOfMerged = async(id1, id2)=>{
+  // get token && data of id1
+  // get token && data of id2
+
+  // send notification
+  // send email
+
+  const data1 = (await db.promise().query("SELECT * users AS A inner JOIN push_noti AS B ON A.u_id=B.account_id WHERE A.u_id = ?", [id1]))[0][0];
+  const data2 = (await db.promise().query("SELECT * users AS A inner JOIN push_noti AS B ON A.u_id=B.account_id WHERE A.u_id = ?", [id2]))[0][0];
+
+  const token1 = data1.device_token;
+  const token2 = data2.device_token;
+
+  const title = "You Have Successfully Merged with a new interest";
+
+  const message = "Open App to see the new activities and chats";
+
+  return (await sendPushNoti(title, message, [token1, token2]))
+  
+}
+
 module.exports = {
     sendMail,
     sendSMS,
@@ -141,6 +162,7 @@ module.exports = {
     getDistanceInMeter,
     initPusher,
     filterByInterest,
+    notifyPartiesOfMerged,
     pusher_presence_channel_name,
     pusherObject: pusher
 }
