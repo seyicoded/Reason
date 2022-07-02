@@ -175,8 +175,34 @@ const getActiveLikeRequestController = async (req, res)=>{
     }
 }
 
+const acceptLikeRequestController = async (req, res)=>{
+    try{
+        const user_id = (await req.user).u_id;
+        const {ll_id} = req.body
+
+        const r = await db.promise().query("UPDATE like_linker SET status = ? WHERE ll_id = ?", [1, _dt.ll_id])[0]
+
+        try{
+            // send push notification to receiver
+        }catch(e){}
+
+        return res.status(200).json({
+            status: true,
+            newlyMerged: true,
+            message: 'Merged successfully, Chat now active',
+        })
+    }catch(e){
+        return res.status(200).json({
+            status: false,
+            message: 'An error occurred',
+            data: e,
+        })
+    }
+}
+
 module.exports = {
     getPeopleController,
     sendLikeRequestController,
-    getActiveLikeRequestController
+    getActiveLikeRequestController,
+    acceptLikeRequestController
 }
