@@ -10,7 +10,7 @@ const {
     } = require('../../middlewares/authvet');
 
 app.get('/main/get-people', verifyUsersToken, getPeopleController)
-app.get('/main/send-like-request', verifyUsersToken, sendLikeRequestController)
-app.get('/main/get-sent-like-request-list', verifyUsersToken, getActiveLikeRequestController)
+app.post('/main/send-like-request', verifyUsersToken, sendLikeRequestController)
+app.post('/main/get-sent-like-request-list', verifyUsersToken, getActiveLikeRequestController)
 
 module.exports = app;
