@@ -157,7 +157,7 @@ const getActiveLikeRequestController = async (req, res)=>{
     try{
         const user_id = (await req.user).u_id;
 
-        const data = await db.promise().query("SELECT * FROM like_linker WHERE reciever_id = ? AND STATUS = ?", [user_id, 0])[0];
+        const data = await db.promise().query("SELECT * FROM like_linker WHERE reciever_id = ? AND status = ?", [user_id, 0])[0];
 
         return res.status(200).json({
             status: true,
