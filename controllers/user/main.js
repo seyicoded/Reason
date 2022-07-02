@@ -153,7 +153,22 @@ const sendLikeRequestController = async (req, res)=>{
     }
 }
 
+const getActiveLikeRequestController = async (req, res)=>{
+    try{
+        const user_id = (await req.user).u_id;
+
+
+    }catch(e){
+        return res.status(200).json({
+            status: false,
+            message: 'An error occurred',
+            data: e,
+        })
+    }
+}
+
 module.exports = {
     getPeopleController,
-    sendLikeRequestController
+    sendLikeRequestController,
+    getActiveLikeRequestController
 }
