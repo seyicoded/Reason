@@ -47,6 +47,29 @@ const getMyChat = async (req, res)=>{
     }
 }
 
+const getSingleChat = async (req, res)=>{
+    try{
+        const user_id = (await req.user).u_id;
+        const {ll_id} = req.params
+
+        const chat = (await db.promise().query("SELECT * FROM chat WHERE ll_id = ? AND status = 1", [element.ll_id]))[0];
+
+        return res.status(200).json({
+            status: true,
+            message: 'successfully fetched',
+            data: chat,
+        })
+
+    }catch(e){
+        return res.status(200).json({
+            status: false,
+            message: 'An error occurred',
+            data: e,
+        })
+    }
+}
+
 module.exports = {
-    getMyChat
+    getMyChat,
+    getSingleChat
 }
