@@ -25,6 +25,7 @@ const getMyChat = async (req, res)=>{
             // const other_media = (await db.promise().query("SELECT * FROM user_medias WHERE u_id = ?", [other_id]))[0];
             const chat = (await db.promise().query("SELECT * FROM chat WHERE ll_id = ? AND status = 1", [element.ll_id]))[0];
             chatData[index] = {
+                ll_id: element.ll_id,
                 other_data,
                 // other_media,
                 chat
@@ -36,7 +37,7 @@ const getMyChat = async (req, res)=>{
             message: 'successfully fetched',
             data: chatData,
         })
-        
+
     }catch(e){
         return res.status(200).json({
             status: false,
