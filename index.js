@@ -11,6 +11,7 @@ app.use(cors())
 const userAuthRoutes = require('./routes/user/auth');
 const userProfileRoutes = require('./routes/user/profile');
 const mainRoutes = require('./routes/user/main');
+const chatRoutes = require('./routes/user/chat');
 
 const pusherRoutes = require('./routes/pusher/auth');
 
@@ -41,6 +42,7 @@ app.use('/v1', adminAuthRoutes)
 app.use('/v1', adminProfileRoutes)
 app.use('/v1', adminDashboardRoutes)
 app.use('/v1', mainRoutes)
+app.use('/v1', chatRoutes)
 app.use('/v1', pusherRoutes)
 app.get('/user/account-validate/:token', verify_account)
 
