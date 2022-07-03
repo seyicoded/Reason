@@ -154,6 +154,23 @@ const notifyPartiesOfMerged = async(id1, id2)=>{
   
 }
 
+const notifyPartiesOfMessage = async(id1, from, message)=>{
+  // get token && data of id1
+  // get token && data of id2
+
+  // send notification
+  // send email
+
+  const data1 = (await db.promise().query("SELECT * users AS A inner JOIN push_noti AS B ON A.u_id=B.account_id WHERE A.u_id = ?", [id1]))[0][0];
+
+  const token1 = data1.device_token;
+
+  const title = "You Have a New Message From "+from;
+
+  return (await sendPushNoti(title, message, [token1]))
+  
+}
+
 module.exports = {
     sendMail,
     sendSMS,
@@ -163,6 +180,7 @@ module.exports = {
     initPusher,
     filterByInterest,
     notifyPartiesOfMerged,
+    notifyPartiesOfMessage,
     pusher_presence_channel_name,
     pusherObject: pusher
 }
