@@ -34,25 +34,27 @@ const uploadFile = async(path, filename, others) => {
 
 const createBroadcast = async (req, res)=>{
     try{
+        const form = formidable({ multiples: true });
         const user_id = (await req.user).u_id;
-        const {
-            title,
-            description,
-            hasImage,
-            isSorted,
-            gender,
-            region,
-            total_number_to_reach,
-            expire_on
-        } = req.body
 
         // check if hasImage is sent
         var content = '';
-        if(hasImage == 'true'){
+        if(true){
             // upload image and get the url
-
-            const form = formidable({ multiples: true });
             form.parse(req, async (err, fields, files) => {
+                const {
+                    title,
+                    description,
+                    hasImage,
+                    isSorted,
+                    gender,
+                    region,
+                    total_number_to_reach,
+                    expire_on
+                } = fields
+
+                console.log(fields)
+
                 if(err){
                     return res.status(500).json({
                         status: false,
@@ -60,60 +62,63 @@ const createBroadcast = async (req, res)=>{
                         error: err
                     })
                 }
+                
+                if(hasImage == 'true'){
+                    const media = (files.image);
+                    let originalFilename = media.originalFilename;
+                    let originalFilenameArr = originalFilename.split('.')
+                    let fileExtension = originalFilenameArr[originalFilenameArr.length - 1]
+                    originalFilename = `${uuidv4()}.${fileExtension}`;
+            
+                    content = await uploadFile(`${media.filepath}`, originalFilename)
+                }
+                
+
+                // get user currency
+                const userData = (await db.promise().query("SELECT * FROM users WHERE u_id = ?", [user_id]))[0][0];
+                const currency = userData.currency;
+
+                // get conversion rate to user currency
+                const conversionRate = (await db.promise().query("SELECT * FROM app_currency WHERE currency = ?", [currency]))[0][0];
+                const conversionRateToUserCurrency = parseFloat(conversionRate.one_usd_equal);
+
+                // get amount in usd of broadcast per user
+                const amountPerBroadcastInLocalCurrency = parseFloat(PER_BROADCAST_COST) * conversionRateToUserCurrency;
+                
+                const amountToPay = parseFloat(amountPerBroadcastInLocalCurrency * parseFloat(total_number_to_reach));
+
+                // send request to paystack
+                const paystackResponse = await axios.post("https://api.paystack.co/transaction/initialize", {
+                    amount: amountToPay * 100,
+                    email: userData.email,
+                    currency: currency,
+                }, {
+                    headers: {
+                        "Authorization": `Bearer ${PAYSTACK_SECRET_KEY}`
+                    }
+                })
+
+                const ref = paystackResponse.data.data.reference;
+                const paymentUrl = paystackResponse.data.data.authorization_url;
+
+                // create broadcast
+                const broadcast_id = (await db.promise().query("INSERT INTO broadcast_holder (u_id, tnx_ref, title, description, content, is_Sorted, distance_range, gender, to_total_user, expire_on, status) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
+                [user_id, ref, title, description, content, isSorted, region, gender, total_number_to_reach, expire_on, 0]))[0][0].insertId;
+
+                return res.status(201).json({
+                    status: true,
+                    message: 'Broadcast Entry Created, Processing to payment',
+                    data: {
+                        payment_url: paymentUrl,
+                        broadcast_id: broadcast_id
+                    }
+                })
+
             })
-
-            const media = (files.image);
-            let originalFilename = media.originalFilename;
-            let originalFilenameArr = originalFilename.split('.')
-            let fileExtension = originalFilenameArr[originalFilenameArr.length - 1]
-            originalFilename = `${uuidv4()}.${fileExtension}`;
-    
-            content = await uploadFile(`${media.filepath}`, originalFilename)
-        }
-
-        // get user currency
-        const userData = (await db.promise().query("SELECT * FROM users WHERE u_id = ?", [user_id]))[0][0];
-        const currency = userData.currency;
-
-        // get conversion rate to user currency
-        const conversionRate = (await db.promise().query("SELECT * FROM app_currency WHERE currency = ?", [currency]))[0][0];
-        const conversionRateToUserCurrency = parseFloat(conversionRate.one_usd_equal);
-
-        // get amount in usd of broadcast per user
-        const amountPerBroadcastInLocalCurrency = parseFloat(PER_BROADCAST_COST) * conversionRateToUserCurrency;
-        console.log(`${amountPerBroadcastInLocalCurrency}-${conversionRateToUserCurrency}-${PER_BROADCAST_COST}`)
-
-        const amountToPay = (amountPerBroadcastInLocalCurrency * total_number_to_reach).toFixed(2);
-
-        // send request to paystack
-        const paystackResponse = await axios.post("https://api.paystack.co/transaction/initialize", {
-            amount: amountToPay * 100,
-            email: userData.email,
-            currency: currency,
-        }, {
-            headers: {
-                "Authorization": `Bearer ${PAYSTACK_SECRET_KEY}`
-            }
-        })
-
-        const ref = paystackResponse.data.data.reference;
-        const paymentUrl = paystackResponse.data.data.authorization_url;
-
-        // create broadcast
-        const broadcast_id = (await db.promise().query("INSERT INTO broadcast_holder (u_id, tnx_ref, title, description, content, is_Sorted, distance_range, gender, to_total_user, expire_on, status) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-        [user_id, ref, title, description, content, isSorted, region, gender, total_number_to_reach, expire_on, 0]))[0][0].insertId;
-
-        return res.status(201).json({
-            status: true,
-            message: 'Broadcast Entry Created, Processing to payment',
-            data: {
-                payment_url: paymentUrl,
-                broadcast_id: broadcast_id
-            }
-        })
+    }
         
     }catch(e){
-        console.log(e)
+        // console.log(e)
         return res.status(200).json({
             status: false,
             message: 'An error occurred',

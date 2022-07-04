@@ -104,12 +104,11 @@ const sendChat = async (req,res)=>{
     // send pusher event to chat
 
     try{
+        const form = formidable({ multiples: true });
         const user_id = (await req.user).u_id;
-        const {ll_id, type} = req.body
         var content = '';
-        if(type != 'plain_text'){
+        if(true){
             // treat as media chat
-            const form = formidable({ multiples: true });
             form.parse(req, async (err, fields, files) => {
                 if(err){
                     return res.status(500).json({
@@ -118,56 +117,59 @@ const sendChat = async (req,res)=>{
                         error: err
                     })
                 }
-            })
 
-            const media = (files.content);
-            let originalFilename = media.originalFilename;
-            let originalFilenameArr = originalFilename.split('.')
-            let fileExtension = originalFilenameArr[originalFilenameArr.length - 1]
-            originalFilename = `${uuidv4()}.${fileExtension}`;
-    
-            content = await uploadFile(`${media.filepath}`, originalFilename)
-        }else{
-            // 
-            content = req.body.content
-        }
+                const {ll_id, type} = fields
 
-        // insert entry into database
-        const insert_query = `INSERT INTO chat_message (ll_id, sender_id, content, type, status) VALUES (?,?,?,?,1)`;
-        const insert_data = [ll_id, user_id, content, type];
-        const insert_result = await db.promise().query(insert_query, insert_data);
-        const insert_id = insert_result[0].insertId;
+                if(type != 'plain_text'){
+                    const media = (files.content);
+                    let originalFilename = media.originalFilename;
+                    let originalFilenameArr = originalFilename.split('.')
+                    let fileExtension = originalFilenameArr[originalFilenameArr.length - 1]
+                    originalFilename = `${uuidv4()}.${fileExtension}`;
+            
+                    content = await uploadFile(`${media.filepath}`, originalFilename)
+                }else{
+                    content = fields.content
+                }
+        
 
-        // send push notification to reciever
-        const ll_data = (await db.promise().query("SELECT * FROM like_linker WHERE ll_id = ?", [ll_id]))[0][0];
-        const other_id = ll_data.sender_id == user_id ? ll_data.reciever_id : ll_data.sender_id;
-        const other_data = (await db.promise().query("SELECT * FROM users AS user_data WHERE user_data.u_id = ?", [other_id]))[0][0];
-        try{
-            await notifyPartiesOfMessage(other_id, other_data.f_name + ' '+ other_data.l_name, (type == 'plain_text' ? content : type ))
-        }catch(e){console.log(e)}
+            // insert entry into database
+            const insert_query = `INSERT INTO chat_message (ll_id, sender_id, content, type, status) VALUES (?,?,?,?,1)`;
+            const insert_data = [ll_id, user_id, content, type];
+            const insert_result = await db.promise().query(insert_query, insert_data);
+            const insert_id = insert_result[0].insertId;
 
-        // send pusher event
-        pusherObject.trigger('private-channel-chat', 'new_message_'+ll_id, {
-            ll_id,
-            sender_id: user_id,
-            content,
-            type,
-            time: new Date().getTime()
-        })
+            // send push notification to reciever
+            const ll_data = (await db.promise().query("SELECT * FROM like_linker WHERE ll_id = ?", [ll_id]))[0][0];
+            const other_id = ll_data.sender_id == user_id ? ll_data.reciever_id : ll_data.sender_id;
+            const other_data = (await db.promise().query("SELECT * FROM users AS user_data WHERE user_data.u_id = ?", [other_id]))[0][0];
+            try{
+                await notifyPartiesOfMessage(other_id, other_data.f_name + ' '+ other_data.l_name, (type == 'plain_text' ? content : type ))
+            }catch(e){console.log(e)}
 
-        return res.status(200).json({
-            status: true,
-            message: 'successfully sent',
-            data: {
+            // send pusher event
+            pusherObject.trigger('private-channel-chat', 'new_message_'+ll_id, {
                 ll_id,
                 sender_id: user_id,
                 content,
                 type,
                 time: new Date().getTime()
-            }
+            })
+
+            return res.status(200).json({
+                status: true,
+                message: 'successfully sent',
+                data: {
+                    ll_id,
+                    sender_id: user_id,
+                    content,
+                    type,
+                    time: new Date().getTime()
+                }
+            })
+
         })
-
-
+    }
 
     }catch(e){
         console.log(e)
