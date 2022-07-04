@@ -73,7 +73,7 @@ const createBroadcast = async (req, res)=>{
         }
 
         // get user currency
-        const userData = (await db.promise().query("SELECT * FROM users WHERE u_id = 1", [user_id]))[0][0];
+        const userData = (await db.promise().query("SELECT * FROM users WHERE u_id = ?", [user_id]))[0][0];
         const currency = userData.currency;
 
         // get conversion rate to user currency
