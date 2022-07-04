@@ -33,7 +33,6 @@ const uploadFile = async(path, filename, others) => {
 }
 
 const createBroadcast = async (req, res)=>{
-    console.log('reached')
     try{
         const user_id = (await req.user).u_id;
         const {
@@ -82,6 +81,7 @@ const createBroadcast = async (req, res)=>{
 
         // get amount in usd of broadcast per user
         const amountPerBroadcastInLocalCurrency = parseFloat(PER_BROADCAST_COST) * conversionRateToUserCurrency;
+        console.log(`${amountPerBroadcastInLocalCurrency}-${conversionRateToUserCurrency}-${PER_BROADCAST_COST}`)
 
         const amountToPay = (amountPerBroadcastInLocalCurrency * total_number_to_reach).toFixed(2);
 
