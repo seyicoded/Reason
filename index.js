@@ -20,6 +20,7 @@ const adminAuthRoutes = require('./routes/admin/auth');
 const adminProfileRoutes = require('./routes/admin/profile');
 const adminDashboardRoutes = require('./routes/admin/dashboard');
 const { initPusher } = require('./resource/general');
+const { triggerBroadcast } = require('./controllers/user/broadcast');
 
 app.use(express.json());
 app.use(express.urlencoded({
@@ -49,6 +50,16 @@ app.use('/v1', broadcastRoutes)
 app.get('/user/account-validate/:token', verify_account)
 
 const port = process.env.PORT || 8080;
+
+// cron job function
+setInterval(()=>{
+    // runs every eight hours
+    console.log('runs every eight hours')
+    triggerBroadcast()
+}, (8 * ( 60 * (60000))))
+
+// remove this after test
+// triggerBroadcast()
 
 app.listen(port, ()=>{
     console.log('listening on '+port);
