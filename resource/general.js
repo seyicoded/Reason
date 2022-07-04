@@ -113,7 +113,7 @@ const sendSMS = async({to, body})=>{
     }
 }
 
-const sendPushNoti = async(title, body, token, noti_payload = null, data = null, shouldLive = false)=>{
+const sendPushNoti = async(title, body, token = [], noti_payload = null, data = null, shouldLive = false, others = {})=>{
   // token would be ['__token_string1', '__token_string2']
   let payload = {
     notification: {
@@ -121,7 +121,8 @@ const sendPushNoti = async(title, body, token, noti_payload = null, data = null,
       body,
       ...noti_payload
     },
-    data
+    data,
+    ...others
   }
 
   let options = {
