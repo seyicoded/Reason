@@ -88,22 +88,35 @@ const createBroadcast = async (req, res)=>{
                 const amountToPay = parseFloat(amountPerBroadcastInLocalCurrency * parseFloat(total_number_to_reach));
 
                 // send request to paystack
-                const paystackResponse = await axios.post("https://api.paystack.co/transaction/initialize", {
-                    amount: amountToPay * 100,
-                    email: userData.email,
-                    currency: currency,
-                }, {
-                    headers: {
-                        "Authorization": `Bearer ${PAYSTACK_SECRET_KEY}`
-                    }
-                })
+                var paystackResponse;
+                try{
+                    paystackResponse = await axios({
+                        method: 'POST',
+                        url: 'https://api.paystack.co/transaction/initialize',
+                        data: {
+                            amount: amountToPay * 100,
+                            email: userData.email,
+                            currency: currency,
+                            },
+                        headers: {
+                            "Authorization": `Bearer ${PAYSTACK_SECRET_KEY}`
+                        }
+                    })
+                }catch(e){
+                    console.log(e)
+                    return res.status(200).json({
+                        status: false,
+                        message: 'An error occurred',
+                        data: e,
+                    })
+                }
 
                 const ref = paystackResponse.data.data.reference;
                 const paymentUrl = paystackResponse.data.data.authorization_url;
 
                 // create broadcast
                 const broadcast_id = (await db.promise().query("INSERT INTO broadcast_holder (u_id, tnx_ref, title, description, content, is_Sorted, distance_range, gender, to_total_user, expire_on, status) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)",
-                [user_id, ref, title, description, content, isSorted, region, gender, total_number_to_reach, expire_on, 0]))[0][0].insertId;
+                [user_id, ref, title, description, content, isSorted, region, gender, total_number_to_reach, expire_on, 0]))[0].insertId;
 
                 return res.status(201).json({
                     status: true,
