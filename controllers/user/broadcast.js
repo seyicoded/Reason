@@ -248,6 +248,13 @@ const triggerBroadcast = async(bh_id = null)=>{
     for (const element of broadcastData) {
         const data = element;
 
+        // before any code, check if it's expire, if it is, then just finish it before anything
+        if((new Date(data.expire_on)).getTime() < new Date().getTime()){
+            // it's already expired
+            await db.promise().query("UPDATE broadcast_holder SET status = 3 WHERE bh_id = ?", [data.bh_id]);
+            continue;
+        }
+
         var idToSend = []
         
         var max = parseInt(data.to_total_user);
