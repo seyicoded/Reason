@@ -120,7 +120,7 @@ const sendChat = async (req,res)=>{
                 }
             })
 
-            const media = (files.media);
+            const media = (files.content);
             let originalFilename = media.originalFilename;
             let originalFilenameArr = originalFilename.split('.')
             let fileExtension = originalFilenameArr[originalFilenameArr.length - 1]
