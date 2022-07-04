@@ -33,6 +33,7 @@ const uploadFile = async(path, filename, others) => {
 }
 
 const createBroadcast = async (req, res)=>{
+    console.log('reached')
     try{
         const user_id = (await req.user).u_id;
         const {
@@ -112,6 +113,7 @@ const createBroadcast = async (req, res)=>{
         })
         
     }catch(e){
+        console.log(e)
         return res.status(200).json({
             status: false,
             message: 'An error occurred',
