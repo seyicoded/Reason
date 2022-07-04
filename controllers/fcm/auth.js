@@ -46,11 +46,6 @@ const fcmRegisterController = async (req, res)=>{
             message: 'An Error Occurred',
         })
     }
-    
-
-    
-    return res.send('reach')
-    
 }
 
 module.exports ={

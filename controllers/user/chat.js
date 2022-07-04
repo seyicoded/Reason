@@ -10,6 +10,27 @@ const { initPusher } = require('../../resource/general');
 const pusherObject = initPusher()
 const storageRef = firebase.storage().bucket('gs://reasnsapp.appspot.com');
 
+const uploadFile = async(path, filename, others) => {
+    // Upload the File
+    let dest;
+    if(others){
+        dest = `/uploads/other_media/${filename}`;
+    }else{
+        dest = `/uploads/main_media/${filename}`;
+    }
+
+    const storage = await storageRef.upload(path, {
+        public: true,
+        destination: dest,
+        metadata: {
+            firebaseStorageDownloadTokens: uuidv4(),
+        }
+    });
+
+
+    return storage[0].metadata.mediaLink;
+}
+
 const getMyChat = async (req, res)=>{
     // get all list of active lik_linker
     // loop through it and get the id of the other party and get the user info

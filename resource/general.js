@@ -7,6 +7,9 @@ const firebase = require('./firebase')
 require('dotenv').config()
 
 var pusher = null;
+const PER_BROADCAST_COST = process.env.COST_PER_BROADCAST;
+const PAYSTACK_PUBLIC_KEY = process.env.PAYSTACK_PUBLIC_KEY;
+const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY;
 const pusher_presence_channel_name = "presence-online";
 
 const initPusher = ()=>{
@@ -182,5 +185,8 @@ module.exports = {
     notifyPartiesOfMerged,
     notifyPartiesOfMessage,
     pusher_presence_channel_name,
-    pusherObject: pusher
+    pusherObject: pusher,
+    PER_BROADCAST_COST,
+    PAYSTACK_PUBLIC_KEY,
+    PAYSTACK_SECRET_KEY
 }
