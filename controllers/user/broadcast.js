@@ -97,6 +97,7 @@ const createBroadcast = async (req, res)=>{
                             amount: amountToPay * 100,
                             email: userData.email,
                             currency: currency,
+                            callback_url: 'https://example.com/success',
                             },
                         headers: {
                             "Authorization": `Bearer ${PAYSTACK_SECRET_KEY}`
@@ -140,6 +141,59 @@ const createBroadcast = async (req, res)=>{
     }
 }
 
+const verifyBroadcast = async(req, res)=>{
+    try{
+        const { broadcast_id } = req.body;
+        const user_id = (await req.user).u_id;
+
+        // get broadcast data
+        const broadcastData = (await db.promise().query("SELECT * FROM broadcast_holder WHERE broadcast_id = ?", [broadcast_id]))[0][0];
+        const ref = broadcastData.tnx_ref;
+
+        // check if broadcast is already verified
+        if(broadcastData.status != 0){
+            return res.status(200).json({
+                status: false,
+                message: 'Broadcast is already verified',
+            })
+        }
+
+        // send request to paystack to verify request
+        const paystackResponse = await axios({
+            method: 'GET',
+            url: 'https://api.paystack.co/transaction/verify/'+ref,
+            headers: {
+                "Authorization": `Bearer ${PAYSTACK_SECRET_KEY}`
+            }
+        })
+
+        if(paystackResponse.data.data.status !== 'success'){
+            // payment was not successful
+            return res.status(200).json({
+                status: false,
+                message: 'Payment was not successful',
+                data: paystackResponse.data
+            })
+        }
+
+        // verify broadcast
+        const update = await db.promise().query("UPDATE broadcast_holder SET status = 1 WHERE broadcast_id = ?", [broadcast_id]);
+
+        return res.status(200).json({
+            status: true,
+            message: 'Broadcast verified',
+        })
+    }catch(e){
+        // console.log(e)
+        return res.status(200).json({
+            status: false,
+            message: 'An error occurred',
+            data: e,
+        })
+    }
+}
+
 module.exports = {
-    createBroadcast
+    createBroadcast,
+    verifyBroadcast
 }
