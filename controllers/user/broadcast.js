@@ -181,7 +181,7 @@ const verifyBroadcast = async(req, res)=>{
 
         return res.status(200).json({
             status: true,
-            message: 'Broadcast verified',
+            message: 'Broadcast verified and have been added to queue',
         })
     }catch(e){
         // console.log(e)
