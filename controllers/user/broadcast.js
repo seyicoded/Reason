@@ -147,7 +147,7 @@ const verifyBroadcast = async(req, res)=>{
         const user_id = (await req.user).u_id;
 
         // get broadcast data
-        const broadcastData = (await db.promise().query("SELECT * FROM broadcast_holder WHERE broadcast_id = ?", [broadcast_id]))[0][0];
+        const broadcastData = (await db.promise().query("SELECT * FROM broadcast_holder WHERE bh_id = ?", [broadcast_id]))[0][0];
         const ref = broadcastData.tnx_ref;
 
         // check if broadcast is already verified
@@ -177,7 +177,7 @@ const verifyBroadcast = async(req, res)=>{
         }
 
         // verify broadcast
-        const update = await db.promise().query("UPDATE broadcast_holder SET status = 1 WHERE broadcast_id = ?", [broadcast_id]);
+        const update = await db.promise().query("UPDATE broadcast_holder SET status = 1 WHERE bh_id = ?", [broadcast_id]);
 
         return res.status(200).json({
             status: true,
