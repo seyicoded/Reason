@@ -227,8 +227,7 @@ const sendBroadcast = async(data, idToSend)=>{
                 headers: {
                 image: data.content
                 }
-            },
-            topic: data.title,
+            }
         })
     }catch(e){
         console.log(e)
