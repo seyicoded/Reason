@@ -3,6 +3,7 @@ const firebase = require('../../resource/firebase')
 const {getDB} = require('../../db/index')
 const db = getDB;
 const { v4: uuidv4 } = require('uuid');
+const { sendMail } = require('../../resource/general');
 
 const upgradeSubscription = async (req, res) => {
     // first get previous expiry date, 
@@ -34,7 +35,7 @@ const upgradeSubscription = async (req, res) => {
             }
         }
 
-        const result = (await db.promise().query("UPDATE users SET subscription_expiry = ?, subscription_status = 1 WHERE u_id = ?", [newDate.toISOString(), user_id]))[0];
+        const result = (await db.promise().query("UPDATE users SET subscription_expiry = ?, subscription_status = 1, has_notify = 0 WHERE u_id = ?", [newDate.toISOString(), user_id]))[0];
 
         if(result.affectedRows > 0){
             return res.status(200).json({
@@ -59,6 +60,62 @@ const upgradeSubscription = async (req, res) => {
     }
 }
 
+const notifyUser = async (id, type, data)=>{
+    try{
+        let email = data.email;
+        let subject = '';
+        let msg = '';
+        switch (type) {
+            case "expired":
+                subject = 'Your Subscription has expired';
+                msg = 'To continue enjoying premium features on our application you\'re required to re-subscribe in other to stay connected';
+                break;
+
+            case "a_week_remaining":
+                subject = 'Your Subscription would soon expire';
+                msg = 'To continue enjoying premium features on our application you\'re required to re-subscribe in other to stay connected';
+                break;
+        
+            default:
+                break;
+        }
+
+        await sendMail(email, subject, msg)
+    }catch(e){
+        console.log(e)
+    }
+}
+
+const cronSubscriptionChecker = async () => {
+    // loop throught all active users with a subsription,
+    // check if the subscription is valid, if not then de-activate it, also if it's less than let's say a week, let's notify the user if not notified, and if notify, then update to notify
+    try{
+        const data = (await db.promise().query("SELECT * FROM users WHERE subscription_status = 1", []))[0]
+        for (let index = 0; index < data.length; index++) {
+            const _data = data[index]
+            const expireDate = new Date(_data.subscription_expiry);
+            const todayDate = new Date();
+            if(expireDate.getTime() < todayDate.getTime()){
+                // expired
+                await db.promise().query("UPDATE users SET subscription_status = 0 WHERE u_id = ?", [_data.u_id]);
+                notifyUser(_data.u_id, "expired", _data)
+            }else{
+                // compare date if 
+                const dateRemaining = parseInt(expireDate.getTime()) - parseInt(todayDate.getTime());
+                // presently a week in millisecond
+                const threshold = 604800000;
+                if(dateRemaining < threshold){
+                    notifyUser(_data.u_id, "a_week_remaining", _data)
+                    await db.promise().query("UPDATE users SET has_notify = 1 WHERE u_id = ?", [_data.u_id]);
+                }
+            }
+        }
+    }catch(e){
+        console.log(e)
+    }
+}
+
 module.exports = {
-    upgradeSubscription
+    upgradeSubscription,
+    cronSubscriptionChecker
 }
