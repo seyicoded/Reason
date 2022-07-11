@@ -5,7 +5,8 @@ const {
     uploadOtherMediaController,
     deleteOtherMediaController,
     updateLocationController,
-    getController} =  require('../../controllers/user/profile')
+    getController,
+    postRegIntensionUpdateController} =  require('../../controllers/user/profile')
 
 const {
     verifyUsersToken
@@ -16,6 +17,10 @@ app.post('/profile/upload-other-media', verifyUsersToken, uploadOtherMediaContro
 app.delete('/profile/delete-other-media', verifyUsersToken, deleteOtherMediaController)
 app.post('/profile/update-location', verifyUsersToken, updateLocationController)
 app.post('/profile/get', verifyUsersToken, getController)
+
+// post-reg-intension
+app.post('/profile/post-reg-intension', verifyUsersToken, postRegIntensionUpdateController)
+
 // get
 // update-location
 // upload-other-media

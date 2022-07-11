@@ -231,10 +231,44 @@ const getController = async(req, res)=>{
     })
 }
 
+const postRegIntensionUpdateController = async (req, res)=>{
+    const user_id = (await req.user).u_id;
+
+    const {intension} = (req.body)
+
+    // validate intension
+    if(intension === 'marriage' || intension === 'chat' || intension === 'therapy'){
+
+    }else{
+        return res.status(400).json({
+            status: false,
+            message: 'Invalid intension',
+            data: null
+        })
+    }
+
+    const data = (await db.promise().query("UPDATE users SET intension = ? WHERE u_id = ?", [intension, user_id]))[0];
+
+    if(data.affectedRows > 0){
+        return res.status(200).json({
+            status: true,
+            message: 'successfully changed',
+            data: null
+        })
+    }else{
+        return res.status(200).json({
+            status: true,
+            message: 'same as previous intension',
+            data: null
+        })
+    }
+}
+
 module.exports = {
     uploadMainMediaController,
     uploadOtherMediaController,
     deleteOtherMediaController,
     updateLocationController,
-    getController
+    getController,
+    postRegIntensionUpdateController
 }
