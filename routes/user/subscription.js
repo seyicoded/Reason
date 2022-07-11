@@ -7,7 +7,7 @@ const {
     verifyUsersToken
     } = require('../../middlewares/authvet');
 
-app.get('/subscription/upgrade', verifyUsersToken, upgradeSubscription)
+app.post('/subscription/upgrade', verifyUsersToken, upgradeSubscription)
 // get
 // update-location
 // upload-other-media
