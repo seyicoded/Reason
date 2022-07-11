@@ -115,7 +115,33 @@ const cronSubscriptionChecker = async () => {
     }
 }
 
+const getSubscription = async (req, res)=>{
+    try{
+        const user_id = (await req.user).u_id;
+        
+        const userData = (await db.promise().query("SELECT * FROM users WHERE u_id = ?", [user_id]))[0][0];
+        let result = {
+            subscription: (parseInt(userData.subscription_status) == 0) ? 'normal' : 'premium',
+            expire: userData.subscription_expiry,
+        };
+
+        return res.status(200).json({
+            status: true,
+            message: 'successfully fetched',
+            data: result,
+        })
+    }catch(e){
+        console.log(e)
+        return res.status(200).json({
+            status: false,
+            message: 'An error occurred',
+            data: e,
+        })
+    }
+}
+
 module.exports = {
     upgradeSubscription,
-    cronSubscriptionChecker
+    cronSubscriptionChecker,
+    getSubscription
 }
