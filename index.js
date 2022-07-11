@@ -13,6 +13,7 @@ const userProfileRoutes = require('./routes/user/profile');
 const mainRoutes = require('./routes/user/main');
 const chatRoutes = require('./routes/user/chat');
 const broadcastRoutes = require('./routes/user/broadcast');
+const subscriptionRoutes = require('./routes/user/subscription');
 
 const pusherRoutes = require('./routes/pusher/auth');
 
@@ -47,6 +48,7 @@ app.use('/v1', mainRoutes)
 app.use('/v1', chatRoutes)
 app.use('/v1', pusherRoutes)
 app.use('/v1', broadcastRoutes)
+app.use('/v1', subscriptionRoutes)
 app.get('/user/account-validate/:token', verify_account)
 
 const port = process.env.PORT || 8080;
