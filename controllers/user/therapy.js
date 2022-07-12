@@ -64,7 +64,30 @@ const createSession = async(req, res)=>{
     }
 }
 
+const viewSessions = async (req, res)=>{
+    try{
+        const user_id = (await req.user).u_id;
+
+        const result = await db.promise().query("SELECT * FROM therapy_session WHERE client_id = ? AND provider_id = ?", [user_id, user_id]);
+
+
+        return res.status(200).json({
+            status: true,
+            message: 'successfully fetched',
+            data: result,
+        })
+    }catch(e){
+        console.log(e)
+        return res.status(200).json({
+            status: false,
+            message: 'An error occurred',
+            data: e,
+        })
+    }
+}
+
 module.exports = {
     getAll,
-    createSession
+    createSession,
+    viewSessions
 }
