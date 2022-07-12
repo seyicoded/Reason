@@ -87,9 +87,9 @@ const fillForm = async (req, res)=>{
             // check if data is already created, if so, update it
 
             let sql = "UPDATE marriage SET is_anonymous = ?, marital_status = ?, pm_country = ?, pm_state = ?, dob = ?, has_kids = ?, kids = ?, want_kids = ?, accept_other_kids = ?, could_adopt = ?, family_type = ?, family_size = ?, accomodate_other_family = ?, raised_by = ?, partner_contribution_preference = ?, salary_range = ?, partner_height = ?, domestic_work = ?, health_condition = ?, blood_group = ?, genotype = ? WHERE u_id = ?";
-            const res = (await db.promise().query(sql, [is_anonymous, marital_status, pm_country, pm_state, dob, has_kids, kids, want_kids, accept_other_kids, could_adopt, family_type, family_size, accomodate_other_family, raised_by, partner_contribution_preference, salary_range, partner_height, domestic_work, health_condition, blood_group, genotype, user_id]))[0];
+            const result = (await db.promise().query(sql, [is_anonymous, marital_status, pm_country, pm_state, dob, has_kids, kids, want_kids, accept_other_kids, could_adopt, family_type, family_size, accomodate_other_family, raised_by, partner_contribution_preference, salary_range, partner_height, domestic_work, health_condition, blood_group, genotype, user_id]))[0];
 
-            if(res.affectedRows == 1){
+            if(result.affectedRows == 1){
                 return res.status(200).json({
                     status: true,
                     message: 'Form filled successfully',
@@ -107,9 +107,9 @@ const fillForm = async (req, res)=>{
 
             let sql = "INSERT INTO `marriage` (`u_id`, `is_anonymous`, `marital_status`, `pm_country`, `pm_state`, `dob`, `has_kids`, `kids`, `want_kids`, `accept_other_kids`, `could_adopt`, `family_type`, `family_size`, `accomodate_other_family`, `raised_by`, `partner_contribution_preference`, `salary_range`, `partner_height`, `domestic_work`, `health_condition`, `blood_group`, `genotype`, `status`) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
             let params = [user_id, is_anonymous, marital_status, pm_country, pm_state, dob, has_kids, kids, want_kids, accept_other_kids, could_adopt, family_type, family_size, accomodate_other_family, raised_by, partner_contribution_preference, salary_range, partner_height, domestic_work, health_condition, blood_group, genotype, 1];
-            const res = (await db.promise().query(sql, params))[0];
+            const result = (await db.promise().query(sql, params))[0];
 
-            if(res.affectedRows == 1){
+            if(result.affectedRows == 1){
                 return res.status(200).json({
                     status: true,
                     message: 'Form filled successfully',
