@@ -9,7 +9,7 @@ const {
     } = require('../../middlewares/authvet');
 
 app.get('/therapy/get', verifyUsersToken, getAll)
-app.get('/therapy/create', verifyUsersToken, createSession)
+app.post('/therapy/create', verifyUsersToken, createSession)
 // get
 // update-location
 // upload-other-media
