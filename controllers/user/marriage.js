@@ -146,54 +146,118 @@ const getList = async (req, res)=>{
             const _marriage = marriage[0];
             // filter for compatability
 
-            const peopleMarriageData = (await db.promise().query(`SELECT * FROM marriage WHERE is_anonymous = 0 AND (marital_status LIKE '%${_marriage.marital_status}%') AND (pm_country LIKE '%${_marriage.pm_country}%') AND (pm_state LIKE '%${_marriage.pm_state}%') AND (dob LIKE '%${_marriage.dob}%') AND (has_kids LIKE '%${_marriage.has_kids}%') AND (want_kids LIKE '%${_marriage.want_kids}%') AND (accept_other_kids LIKE '%${_marriage.accept_other_kids}%') AND (could_adopt LIKE '%${_marriage.could_adopt}%') AND (family_type LIKE '%${_marriage.family_type}%') AND (partner_height LIKE '%${_marriage.partner_height}%') AND (health_condition LIKE '%${_marriage.health_condition}%') AND (health_condition LIKE '%${_marriage.health_condition}%') AND (blood_group LIKE '%${_marriage.blood_group}%') AND (genotype LIKE '%${_marriage.genotype}%')`, []))[0]
-            const peopleMarriage = peopleMarriageData.map(item=>{
-                const personData = (await db.promise().query("SELECT * FROM users AS user_data WHERE user_data.u_id = ?", [item.u_id]))[0][0];
-                const personMedia = (await db.promise().query("SELECT * FROM user_medias WHERE u_id = ?", [item.u_id]))[0];
-                const marriageData = {
-                    u_id: item.u_id,
-                    is_anonymous: item.is_anonymous,
-                    marital_status: item.marital_status,
-                    pm_country: item.pm_country,
-                    pm_state: item.pm_state,
-                    dob: item.dob,
-                    has_kids: item.has_kids,
-                    kids: item.kids,
-                    want_kids: item.want_kids,
-                    accept_other_kids: item.accept_other_kids,
-                    could_adopt: item.could_adopt,
-                    family_type: item.family_type,
-                    family_size: item.family_size,
-                    accomodate_other_family: item.accomodate_other_family,
-                    raised_by: item.raised_by,
-                    partner_contribution_preference: item.partner_contribution_preference,
-                    salary_range: item.salary_range,
-                    partner_height: item.partner_height,
-                    domestic_work: item.domestic_work,
-                    health_condition: item.health_condition,
-                    blood_group: item.blood_group,
-                    genotype: item.genotype,
-                    status: item.status,
-                }
+            const peopleMarriageData = (await db.promise().query(`SELECT * FROM marriage WHERE is_anonymous = 0 AND (marital_status LIKE '%${_marriage.marital_status}%') AND (pm_country LIKE '%${_marriage.pm_country}%') AND (pm_state LIKE '%${_marriage.pm_state}%') AND (dob LIKE '%${_marriage.dob}%') AND (has_kids LIKE '%${_marriage.has_kids}%') AND (want_kids LIKE '%${_marriage.want_kids}%') AND (accept_other_kids LIKE '%${_marriage.accept_other_kids}%') AND (could_adopt LIKE '%${_marriage.could_adopt}%') AND (family_type LIKE '%${_marriage.family_type}%') AND (partner_height LIKE '%${_marriage.partner_height}%') AND (health_condition LIKE '%${_marriage.health_condition}%') AND (health_condition LIKE '%${_marriage.health_condition}%') AND (blood_group LIKE '%${_marriage.blood_group}%') AND (genotype LIKE '%${_marriage.genotype}%') AND u_id != u_id`, [user_id]))[0]
+            // const peopleMarriageDataLength = peopleMarriageData.length;
+            
+            let peopleMarriage = [];
+            for (const key in peopleMarriageData) {
+                if (Object.hasOwnProperty.call(peopleMarriageData, key)) {
+                    const item = peopleMarriageData[key];
+                    
+                    const personData = (await db.promise().query("SELECT * FROM users AS user_data WHERE user_data.u_id = ?", [item.u_id]))[0][0];
+                    const personMedia = (await db.promise().query("SELECT * FROM user_medias WHERE u_id = ?", [item.u_id]))[0];
+                    const marriageData = {
+                        u_id: item.u_id,
+                        is_anonymous: item.is_anonymous,
+                        marital_status: item.marital_status,
+                        pm_country: item.pm_country,
+                        pm_state: item.pm_state,
+                        dob: item.dob,
+                        has_kids: item.has_kids,
+                        kids: item.kids,
+                        want_kids: item.want_kids,
+                        accept_other_kids: item.accept_other_kids,
+                        could_adopt: item.could_adopt,
+                        family_type: item.family_type,
+                        family_size: item.family_size,
+                        accomodate_other_family: item.accomodate_other_family,
+                        raised_by: item.raised_by,
+                        partner_contribution_preference: item.partner_contribution_preference,
+                        salary_range: item.salary_range,
+                        partner_height: item.partner_height,
+                        domestic_work: item.domestic_work,
+                        health_condition: item.health_condition,
+                        blood_group: item.blood_group,
+                        genotype: item.genotype,
+                        status: item.status,
+                    }
 
-                // get online status
-                const isOnline = getOnlineStatus(pusherObject, item.u_id)
-                const distanceBetweenMe = getDistanceInMeter({
-                    lat: myData.lat,
-                    lon: myData.lng
-                }, {
-                    lat: personData.lat,
-                    lon: personData.lng
-                });
+                    // get online status
+                    const isOnline = getOnlineStatus(pusherObject, item.u_id)
+                    const distanceBetweenMe = getDistanceInMeter({
+                        lat: myData.lat,
+                        lon: myData.lng
+                    }, {
+                        lat: personData.lat,
+                        lon: personData.lng
+                    });
 
-                return {
-                    personData,
-                    personMedia,
-                    marriageData,
-                    isOnline,
-                    distanceBetweenMe,
+                    // return {
+                        // personData,
+                        // personMedia,
+                        // marriageData,
+                        // isOnline,
+                        // distanceBetweenMe,
+                    // }
+
+                    peopleMarriage.push({
+                        personData,
+                        personMedia,
+                        marriageData,
+                        isOnline,
+                        distanceBetweenMe,
+                        unit: 'meter'
+                    })
                 }
-            })
+            }
+
+            // const peopleMarriage = peopleMarriageData.map(item=>{
+            //     const personData = (await db.promise().query("SELECT * FROM users AS user_data WHERE user_data.u_id = ?", [item.u_id]))[0][0];
+            //     const personMedia = (await db.promise().query("SELECT * FROM user_medias WHERE u_id = ?", [item.u_id]))[0];
+            //     const marriageData = {
+            //         u_id: item.u_id,
+            //         is_anonymous: item.is_anonymous,
+            //         marital_status: item.marital_status,
+            //         pm_country: item.pm_country,
+            //         pm_state: item.pm_state,
+            //         dob: item.dob,
+            //         has_kids: item.has_kids,
+            //         kids: item.kids,
+            //         want_kids: item.want_kids,
+            //         accept_other_kids: item.accept_other_kids,
+            //         could_adopt: item.could_adopt,
+            //         family_type: item.family_type,
+            //         family_size: item.family_size,
+            //         accomodate_other_family: item.accomodate_other_family,
+            //         raised_by: item.raised_by,
+            //         partner_contribution_preference: item.partner_contribution_preference,
+            //         salary_range: item.salary_range,
+            //         partner_height: item.partner_height,
+            //         domestic_work: item.domestic_work,
+            //         health_condition: item.health_condition,
+            //         blood_group: item.blood_group,
+            //         genotype: item.genotype,
+            //         status: item.status,
+            //     }
+
+            //     // get online status
+            //     const isOnline = getOnlineStatus(pusherObject, item.u_id)
+            //     const distanceBetweenMe = getDistanceInMeter({
+            //         lat: myData.lat,
+            //         lon: myData.lng
+            //     }, {
+            //         lat: personData.lat,
+            //         lon: personData.lng
+            //     });
+
+            //     return {
+            //         personData,
+            //         personMedia,
+            //         marriageData,
+            //         isOnline,
+            //         distanceBetweenMe,
+            //     }
+            // })
 
             // return data
             return res.status(200).json({
