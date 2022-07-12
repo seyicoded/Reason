@@ -33,6 +33,38 @@ const getAll = async (req, res)=>{
     }
 }
 
+const createSession = async(req, res)=>{
+    try{
+        const user_id = (await req.user).u_id;
+
+        const {
+            therapist_id,
+            session_title,
+            session_description,
+        } = req.body
+
+        const session_id = uuidv4();
+
+        const result = await db.promise().query("INSERT INTO therapy_session (unique_code, client_id, provider_id, need, situation) VALUES (?, ?, ?, ?, ?)", [session_id, user_id, therapist_id, session_title, session_description])
+
+
+
+        return res.status(200).json({
+            status: true,
+            message: 'successfully created',
+            session_id: session_id,
+        })
+    }catch(e){
+        console.log(e)
+        return res.status(200).json({
+            status: false,
+            message: 'An error occurred',
+            data: e,
+        })
+    }
+}
+
 module.exports = {
-    getAll
+    getAll,
+    createSession
 }
