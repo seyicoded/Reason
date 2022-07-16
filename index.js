@@ -22,6 +22,7 @@ const pusherRoutes = require('./routes/pusher/auth');
 const adminAuthRoutes = require('./routes/admin/auth');
 const adminProfileRoutes = require('./routes/admin/profile');
 const adminDashboardRoutes = require('./routes/admin/dashboard');
+const adminUserRoutes = require('./routes/admin/users');
 const { initPusher } = require('./resource/general');
 const { triggerBroadcast } = require('./controllers/user/broadcast');
 const {cronSubscriptionChecker} = require('./controllers/user/subscription')
@@ -47,6 +48,7 @@ app.use('/v1', userProfileRoutes)
 app.use('/v1', adminAuthRoutes)
 app.use('/v1', adminProfileRoutes)
 app.use('/v1', adminDashboardRoutes)
+app.use('/v1', adminUserRoutes)
 app.use('/v1', mainRoutes)
 app.use('/v1', chatRoutes)
 app.use('/v1', pusherRoutes)
