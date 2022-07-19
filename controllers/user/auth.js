@@ -26,6 +26,19 @@ const signinController = async(req, res)=>{
                 (async()=>{
                     const isValidPassword = await bcrypt.compare(password, results[0].password);
                     if(isValidPassword){
+                        // check if user is restricted
+                        if(results[0].status > 1){
+                            // user is restricted
+                            return res.status(200).json({
+                                status: true,
+                                message: 'Login Successful but user retricted',
+                                token: null,
+                                data: null,
+                                isAccountValidated: ((results[0].status == 0) ? true: false)
+            
+                            })
+
+                        }
                         return res.status(200).json({
                             status: true,
                             message: 'Login Successful',
