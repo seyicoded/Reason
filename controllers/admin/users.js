@@ -42,7 +42,7 @@ const viewAll = async (req, res)=>{
 const restrictUser = async (req, res)=>{
     try{
         const {id} = req.body
-        const data = (await db.promise().query("UPDATE users SET status = 2 WHERE u_id = ?", []))[0];
+        const data = (await db.promise().query("UPDATE users SET status = 2 WHERE u_id = ?", [id]))[0];
 
         return res.status(200).json({
             status: true,
