@@ -2,7 +2,8 @@ const express = require('express');
 const app = express.Router();
 
 const {
-    viewAll
+    viewAll,
+    restrictUser
 } = require('../../controllers/admin/users');
 
 const {
@@ -10,5 +11,6 @@ const {
 } = require('../../middlewares/authvet');
 
 app.get('/admin/users/get', verifyUsersToken, viewAll)
+app.post('/admin/users/restrict', verifyUsersToken, restrictUser)
 
 module.exports = app;
