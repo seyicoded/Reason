@@ -15,11 +15,13 @@ const viewAll = async (req, res)=>{
 
                 const user_image = (await db.promise().query("SELECT * FROM users_images WHERE u_id = ?", [element.u_id]))[0];
                 const user_media = (await db.promise().query("SELECT * FROM user_medias WHERE u_id = ?", [element.u_id]))[0];
+                const user_marriage = (await db.promise().query("SELECT * FROM marriage WHERE u_id = ?", [element.u_id]))[0];
                 
                 result.push({
                     mainData: element,
                     user_image,
-                    user_media
+                    user_media,
+                    user_marriage
                 })
             }
         }
