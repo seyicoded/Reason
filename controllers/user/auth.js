@@ -509,6 +509,82 @@ const changePasswordWithOtpController = async(req, res)=>{
     }
 }
 
+const socialLoginController = async (req, res)=>{
+    try{
+        // social login checker
+        const value = req.body.value;
+        const mode = req.body.mode;
+
+        // start
+        db.execute("SELECT * FROM users WHERE email LIKE '%?%' OR phone LIKE '%?%'",[mode, mode],(err, results, fields)=>{
+            if(err){
+                return res.status(500).json({
+                    status: false,
+                    message: 'An error occurred',
+                    error: err
+
+                })    
+            }
+
+            // console.log(results)
+            if( results.length > 0 ){
+                (async()=>{
+                    const isValidPassword = true;
+                    if(isValidPassword){
+                        // check if user is restricted
+                        if(results[0].status > 1){
+                            // user is restricted
+                            return res.status(200).json({
+                                status: true,
+                                message: 'Login Successful but user retricted',
+                                token: null,
+                                data: null,
+                                isAccountValidated: ((results[0].status == 0) ? true: false)
+            
+                            })
+
+                        }
+                        return res.status(200).json({
+                            status: true,
+                            message: 'Login Successful',
+                            token: generateJwtToken(results[0]),
+                            data: results[0],
+                            isAccountValidated: ((results[0].status == 1) ? true: false)
+        
+                        })
+                    }else{
+                        return res.status(500).json({
+                            status: false,
+                            message: 'Email or Phone not registered',
+                            error: []
+        
+                        })  
+                    }
+                })()
+                
+            }else{
+                return res.status(500).json({
+                    status: false,
+                    message: 'User doesn\'t exist',
+                    error: []
+
+                })  
+            }
+
+                
+        });
+        // stop
+        
+    }catch(e){
+        console.log(error)
+        return res.status(500).json({
+            status: false,
+            message: 'an error occurred',
+            error: error
+        })
+    }
+}
+
 module.exports = {
     signinController,
     signupController,
@@ -516,5 +592,6 @@ module.exports = {
     verify_account,
     requestOtpController,
     changePasswordWithOtpController,
-    verifyOtpController
+    verifyOtpController,
+    socialLoginController
 };
