@@ -515,6 +515,8 @@ const socialLoginController = async (req, res)=>{
         const value = req.body.value;
         const mode = req.body.mode;
 
+        console.log(`${value}, ${mode}`)
+
         // start
         db.execute("SELECT * FROM users WHERE email LIKE '%?%' OR phone LIKE '%?%'",[value, value],(err, results, fields)=>{
             if(err){
