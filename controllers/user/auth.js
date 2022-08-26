@@ -563,6 +563,7 @@ const socialLoginController = async (req, res)=>{
                 })()
                 
             }else{
+                console.log(results)
                 return res.status(500).json({
                     status: false,
                     message: 'User doesn\'t exist',
