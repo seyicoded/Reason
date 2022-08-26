@@ -516,7 +516,7 @@ const socialLoginController = async (req, res)=>{
         const mode = req.body.mode;
 
         // start
-        db.execute("SELECT * FROM users WHERE email LIKE '%?%' OR phone LIKE '%?%'",[mode, mode],(err, results, fields)=>{
+        db.execute("SELECT * FROM users WHERE email LIKE '%?%' OR phone LIKE '%?%'",[value, value],(err, results, fields)=>{
             if(err){
                 return res.status(500).json({
                     status: false,
