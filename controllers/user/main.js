@@ -12,8 +12,9 @@ const pusherObject = initPusher()
 const getPeopleController = async (req, res)=>{
     // get my profile first
     const user_id = (await req.user).u_id;
+    const lastIndex = (req.body).lastIndex || 0;
 
-    const myData = (await db.promise().query("SELECT * FROM users AS user_data WHERE user_data.u_id = ?", [user_id]))[0][0];
+    const myData = (await db.promise().query("SELECT * FROM users AS user_data WHERE user_data.u_id = ? AND user_data.u_id > "+lastIndex+" LIMIT 50", [user_id]))[0][0];
 
     // my latitude and longitude
     const myLatitude = myData.lat;
