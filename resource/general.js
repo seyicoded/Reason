@@ -34,7 +34,7 @@ const getOnlineStatus = async (pusherObject, u_id)=>{
     console.log(presence_user)
     // console.log(presence_user.users)
     try{
-      presence_user.users.forEach(user=>{
+      presence_user?.users?.forEach(user=>{
         if(user.id == u_id){
           return true;
         }
